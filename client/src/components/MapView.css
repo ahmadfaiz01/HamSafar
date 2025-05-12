@@ -1,0 +1,22 @@
+/* In client/src/components/Map/MapView.css */
+.map-container {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  
+  .leaflet-container {
+    border-radius: 8px;
+  }
+  
+  .leaflet-popup-content h5 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #333;
+  }
+  
+  .leaflet-popup-content p {
+    margin: 0;
+    color: #666;
+  }

@@ -1,0 +1,48 @@
+/* In client/src/components/Weather/WeatherInfo.css */
+.weather-card {
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.weather-content {
+  display: flex;
+  align-items: center;
+}
+
+.weather-icon {
+  flex: 0 0 auto;
+}
+
+.weather-icon img {
+  width: 100px;
+  height: 100px;
+}
+
+.weather-info {
+  flex: 1;
+  padding-left: 15px;
+}
+
+.temperature {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.description {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.additional-info {
+  display: flex;
+  justify-content: space-between;
+}
+
+.additional-info p {
+  margin: 0;
+  color: #666;
+}

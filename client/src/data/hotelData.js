@@ -1,0 +1,185 @@
+const hotelData = [
+  {
+    id: 1,
+    name: "Grand Plaza Hotel",
+    location: "New York City, NY",
+    rating: 4.5,
+    userRating: 9.2,
+    reviewCount: 2341,
+    price: 189,
+    imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG90ZWx8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Experience luxury in the heart of Manhattan with stunning city views and premium amenities.",
+    amenities: ["Free Wi-Fi", "Fitness Center", "Restaurant", "Pool", "Spa", "Bar", "Room Service", "Parking"]
+  },
+  {
+    id: 2,
+    name: "The Urban Suites",
+    location: "New York City, NY",
+    rating: 4,
+    userRating: 8.7,
+    reviewCount: 1654,
+    price: 140,
+    imageUrl: "https://images.unsplash.com/photo-1582719508461-905c673771fd?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGhvdGVsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Modern accommodation with spacious rooms, close to major attractions and subway stations.",
+    amenities: ["Free Wi-Fi", "Fitness Center", "Restaurant", "Air Conditioning", "Bar"]
+  },
+  {
+    id: 3,
+    name: "Skyline View Hotel",
+    location: "New York City, NY",
+    rating: 5,
+    userRating: 9.5,
+    reviewCount: 876,
+    price: 299,
+    imageUrl: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fGhvdGVsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Luxury five-star hotel offering panoramic views of the city skyline and Central Park.",
+    amenities: ["Free Wi-Fi", "Fitness Center", "Restaurant", "Pool", "Spa", "Bar", "Room Service", "Airport Shuttle", "Parking"]
+  },
+  {
+    id: 4,
+    name: "Park Central Inn",
+    location: "New York City, NY",
+    rating: 3.5,
+    userRating: 7.8,
+    reviewCount: 2103,
+    price: 110,
+    imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG90ZWx8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Affordable comfort in a prime location, perfect for business travelers and tourists alike.",
+    amenities: ["Free Wi-Fi", "Restaurant", "Air Conditioning", "Breakfast"]
+  },
+  {
+    id: 5,
+    name: "The Regent Luxury",
+    location: "London, UK",
+    rating: 5,
+    userRating: 9.7,
+    reviewCount: 1876,
+    price: 320,
+    imageUrl: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjR8fGhvdGVsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Experience the height of British luxury with impeccable service and world-class dining.",
+    amenities: ["Free Wi-Fi", "Fitness Center", "Restaurant", "Pool", "Spa", "Bar", "Room Service", "Airport Shuttle", "Parking"]
+  },
+  {
+    id: 6,
+    name: "London Bridge Hotel",
+    location: "London, UK",
+    rating: 4,
+    userRating: 8.4,
+    reviewCount: 2541,
+    price: 185,
+    imageUrl: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8aG90ZWx8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Stylish hotel with modern amenities, situated close to iconic London Bridge.",
+    amenities: ["Free Wi-Fi", "Fitness Center", "Restaurant", "Bar", "Room Service", "Air Conditioning"]
+  },
+  {
+    id: 7,
+    name: "Eiffel View Suites",
+    location: "Paris, France",
+    rating: 4.5,
+    userRating: 9.1,
+    reviewCount: 1432,
+    price: 235,
+    imageUrl: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8aG90ZWx8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Elegant Parisian hotel with stunning views of the Eiffel Tower and luxury amenities.",
+    amenities: ["Free Wi-Fi", "Restaurant", "Bar", "Room Service", "Air Conditioning", "Airport Shuttle"]
+  },
+  {
+    id: 8,
+    name: "Le Petit Palace",
+    location: "Paris, France",
+    rating: 3.5,
+    userRating: 8.2,
+    reviewCount: 978,
+    price: 150,
+    imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG90ZWx8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Charming boutique hotel in the heart of Paris, close to major attractions and shopping areas.",
+    amenities: ["Free Wi-Fi", "Breakfast", "Air Conditioning", "Bar"]
+  },
+  {
+    id: 9,
+    name: "Tokyo Skyline Hotel",
+    location: "Tokyo, Japan",
+    rating: 5,
+    userRating: 9.4,
+    reviewCount: 1543,
+    price: 275,
+    imageUrl: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjR8fGhvdGVsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Ultra-modern luxury in Tokyo's business district with panoramic city views and Japanese hospitality.",
+    amenities: ["Free Wi-Fi", "Fitness Center", "Restaurant", "Pool", "Spa", "Bar", "Room Service", "Airport Shuttle"]
+  },
+  {
+    id: 10,
+    name: "Sakura Boutique Inn",
+    location: "Tokyo, Japan",
+    rating: 4,
+    userRating: 8.9,
+    reviewCount: 765,
+    price: 190,
+    imageUrl: "https://images.unsplash.com/photo-1582719508461-905c673771fd?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGhvdGVsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Traditional Japanese design meets modern comfort in this centrally located boutique hotel.",
+    amenities: ["Free Wi-Fi", "Restaurant", "Bar", "Breakfast", "Air Conditioning"]
+  },
+  // Add more cities as needed
+  {
+    id: 11,
+    name: "Burj Al Arab View",
+    location: "Dubai, UAE",
+    rating: 5,
+    userRating: 9.8,
+    reviewCount: 1243,
+    price: 420,
+    imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG90ZWx8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Opulent luxury hotel with breathtaking views of the Arabian Gulf and world-class service.",
+    amenities: ["Free Wi-Fi", "Fitness Center", "Restaurant", "Pool", "Spa", "Bar", "Room Service", "Airport Shuttle", "Parking", "Beach Access"]
+  },
+  {
+    id: 12,
+    name: "Barcelona Marina Resort",
+    location: "Barcelona, Spain",
+    rating: 4.5,
+    userRating: 9.0,
+    reviewCount: 1865,
+    price: 210,
+    imageUrl: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8aG90ZWx8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Stunning seaside accommodation with Mediterranean views and close proximity to the city center.",
+    amenities: ["Free Wi-Fi", "Pool", "Restaurant", "Bar", "Fitness Center", "Beach Access"]
+  },
+  {
+    id: 13,
+    name: "Roman Heritage Hotel",
+    location: "Rome, Italy",
+    rating: 4,
+    userRating: 8.5,
+    reviewCount: 1453,
+    price: 180,
+    imageUrl: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjR8fGhvdGVsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Historic hotel housed in a renovated 17th-century building in the heart of ancient Rome.",
+    amenities: ["Free Wi-Fi", "Restaurant", "Bar", "Room Service", "Air Conditioning"]
+  },
+  {
+    id: 14,
+    name: "Marina Bay Sands",
+    location: "Singapore",
+    rating: 5,
+    userRating: 9.6,
+    reviewCount: 3241,
+    price: 350,
+    imageUrl: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8aG90ZWx8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Iconic luxury hotel featuring the world's largest rooftop infinity pool and spectacular city views.",
+    amenities: ["Free Wi-Fi", "Fitness Center", "Restaurant", "Pool", "Spa", "Bar", "Room Service", "Airport Shuttle", "Casino"]
+  },
+  {
+    id: 15,
+    name: "Amsterdam Canal House",
+    location: "Amsterdam, Netherlands",
+    rating: 4,
+    userRating: 8.8,
+    reviewCount: 987,
+    price: 195,
+    imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG90ZWx8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    description: "Charming boutique hotel set in a historic canal house with modern amenities and authentic Dutch design.",
+    amenities: ["Free Wi-Fi", "Breakfast", "Bar", "Bicycle Rental", "Air Conditioning"]
+  }
+];
+
+export default hotelData;
