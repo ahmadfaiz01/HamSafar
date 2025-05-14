@@ -1,0 +1,170 @@
+.flight-page {
+  padding-top: var(--navbar-height, 80px);
+  position: relative;
+  min-height: calc(100vh - var(--navbar-height, 80px));
+}
+
+.flight-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 350px;
+  background-color: var(--primary-color);
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(26, 60, 109, 0.4) 0%, transparent 25%),
+    radial-gradient(circle at 80% 80%, rgba(26, 60, 109, 0.4) 0%, transparent 25%);
+  z-index: -1;
+}
+
+.flight-search-section {
+  padding: 3rem 0;
+  text-align: center;
+  color: white;
+  position: relative;
+}
+
+.flight-page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.flight-page-subtitle {
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  font-size: 1.2rem;
+}
+
+.flight-results-section {
+  margin-bottom: 3rem;
+}
+
+/* Promo section styling */
+.flight-promo-section {
+  padding: 2rem 0;
+}
+
+.promo-card {
+  height: 220px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.promo-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+}
+
+.promo-content {
+  flex: 1;
+  padding: 2rem;
+  background: linear-gradient(to right, white, rgba(255, 255, 255, 0.8));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.promo-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+}
+
+.promo-content p {
+  margin-bottom: 1.5rem;
+  color: #555;
+}
+
+.promo-image {
+  flex: 1;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Popular destinations styling */
+.popular-destinations {
+  margin-top: 3rem;
+}
+
+.popular-destinations h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+}
+
+.destination-card {
+  border-radius: 12px;
+  overflow: hidden;
+  height: 200px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.destination-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.destination-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.destination-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.5rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  color: white;
+}
+
+.destination-overlay h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.destination-overlay p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .flight-page-title {
+    font-size: 2rem;
+  }
+  
+  .promo-content {
+    padding: 1.5rem;
+  }
+  
+  .promo-content h3 {
+    font-size: 1.25rem;
+  }
+  
+  .promo-card {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .promo-content, .promo-image {
+    width: 100%;
+  }
+  
+  .promo-image {
+    height: 150px;
+  }
+}

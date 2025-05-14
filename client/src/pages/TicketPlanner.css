@@ -1,0 +1,193 @@
+.ticket-planner-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.ticket-planner-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.ticket-planner-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color, #2c3e50);
+  margin-bottom: 0.5rem;
+}
+
+.ticket-planner-header p {
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.search-section {
+  margin-bottom: 2rem;
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.results-section {
+  min-height: 300px;
+}
+
+/* Flight Offers Styling */
+.flight-offers-container {
+  margin-top: 2rem;
+}
+
+.flight-offers-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color, #2c3e50);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.flight-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.flight-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.airline-logo-container {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.airline-logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.airline-logo-fallback {
+  width: 40px;
+  height: 40px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.airline-initials {
+  font-weight: bold;
+  font-size: 16px;
+  color: #64748b;
+}
+
+.flight-line {
+  height: 2px;
+  background-color: #e2e8f0;
+  width: 100%;
+}
+
+.flight-stops {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.flight-path {
+  position: relative;
+  padding: 0 1rem;
+}
+
+.airport-code {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.flight-offers-loading, .flight-offers-error, .no-offers {
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.flight-offers-error {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.05);
+  border-radius: 8px;
+}
+
+.flight-offers-error i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* Cheapest Travel Dates Styling */
+.cheapest-dates-container {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.cheapest-date-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  border: 1px solid #e2e8f0;
+  box-shadow: none;
+}
+
+.cheapest-date-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-color, #3498db);
+}
+
+.date-price {
+  font-size: 1.25rem;
+}
+
+.cheapest-dates-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: #64748b;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ticket-planner-container {
+    padding: 1rem;
+  }
+  
+  .ticket-planner-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .search-section {
+    padding: 1rem;
+  }
+  
+  .flight-details {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .flight-path {
+    margin: 1rem 0;
+  }
+}

@@ -1,0 +1,158 @@
+.profile-page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.profile-image-container {
+  position: relative;
+  margin-right: 2rem;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.edit-image-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border: 2px solid white;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-info h2 {
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.profile-info p {
+  margin-bottom: 0.5rem;
+}
+
+.profile-info p i {
+  margin-right: 0.5rem;
+  color: #0d6efd;
+}
+
+.profile-stats {
+  display: flex;
+  margin-top: 1rem;
+}
+
+.stat {
+  margin-right: 2rem;
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.profile-nav {
+  margin-bottom: 2rem;
+}
+
+.preferences-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.preferences-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.preference-tag {
+  border-radius: 20px;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.8rem;
+}
+
+.budget-options {
+  margin-top: 0.5rem;
+}
+
+.map-tab-container {
+  min-height: 600px;
+}
+
+.map-container {
+  height: 500px;
+  margin-bottom: 2rem;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.saved-places {
+  margin-top: 2rem;
+}
+
+.saved-place-card {
+  height: 100%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.saved-place-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.saved-place-card .card-img-top {
+  height: 150px;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .profile-image-container {
+    margin-right: 0;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-stats {
+    justify-content: center;
+  }
+  
+  .stat:last-child {
+    margin-right: 0;
+  }
+}

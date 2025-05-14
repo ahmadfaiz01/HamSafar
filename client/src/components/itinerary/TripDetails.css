@@ -1,0 +1,318 @@
+.trip-details-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.loading-container {
+  text-align: center;
+  padding: 3rem 0;
+  color: #6b7280;
+}
+
+.error-message {
+  padding: 1rem;
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  color: #b91c1c;
+  margin-bottom: 1.5rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 1px solid #d1d5db;
+  color: #4b5563;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  margin-bottom: 1.5rem;
+}
+
+.back-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.trip-header {
+  margin-bottom: 2.5rem;
+}
+
+.trip-header h1 {
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+.trip-locations {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+}
+
+.location {
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.arrow {
+  margin: 0 1rem;
+  color: #9ca3af;
+}
+
+.trip-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+}
+
+.meta-item i {
+  color: #4f46e5;
+}
+
+.trip-notes {
+  padding: 1.25rem;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+.trip-notes h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #4b5563;
+  font-size: 1rem;
+}
+
+.trip-notes p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.day-plans-section,
+.recommendations-section {
+  margin-bottom: 3rem;
+}
+
+.day-plans-section h2,
+.recommendations-section h2 {
+  margin-bottom: 1.5rem;
+  color: #111827;
+  font-size: 1.5rem;
+}
+
+.days-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.day-card {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.day-header {
+  padding: 1.25rem;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.day-header h3 {
+  margin: 0;
+  color: #111827;
+  font-weight: 600;
+}
+
+.day-timeline {
+  padding: 1.25rem;
+}
+
+.timeline-item {
+  display: flex;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 60px;
+  top: 24px;
+  bottom: -10px;
+  width: 1px;
+  background-color: #e5e7eb;
+}
+
+.timeline-time {
+  min-width: 80px;
+  padding-right: 1.5rem;
+  color: #4b5563;
+  font-weight: 500;
+  position: relative;
+}
+
+.timeline-time::after {
+  content: '';
+  position: absolute;
+  right: 7px;
+  top: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #4f46e5;
+}
+
+.timeline-content {
+  flex: 1;
+}
+
+.timeline-content h4 {
+  margin: 0 0 0.5rem 0;
+  color: #111827;
+}
+
+.timeline-location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-location i {
+  color: #4f46e5;
+  font-size: 0.875rem;
+}
+
+.timeline-notes {
+  margin: 0.5rem 0 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.day-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1px;
+  background-color: #e5e7eb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.day-detail-card {
+  background-color: #f9fafb;
+  padding: 1.25rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.detail-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #eef2ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #4f46e5;
+}
+
+.detail-content {
+  flex: 1;
+}
+
+.detail-content h4 {
+  margin: 0 0 0.5rem 0;
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.detail-content p {
+  margin: 0;
+  color: #111827;
+}
+
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.recommendation-card {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.recommendation-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #eef2ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #4f46e5;
+  margin-bottom: 1rem;
+}
+
+.recommendation-card h3 {
+  margin: 0 0 1rem 0;
+  color: #111827;
+  font-size: 1.125rem;
+}
+
+.recommendation-card ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #4b5563;
+}
+
+.recommendation-card li {
+  margin-bottom: 0.5rem;
+}
+
+.recommendation-card li:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .trip-meta {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .trip-locations {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .arrow {
+    transform: rotate(90deg);
+    margin: 0;
+  }
+  
+  .day-detail-card {
+    padding: 1rem;
+  }
+}

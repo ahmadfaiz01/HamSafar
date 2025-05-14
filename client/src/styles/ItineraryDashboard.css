@@ -1,0 +1,242 @@
+.itinerary-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+  font-size: 2rem;
+  color: #333;
+  margin: 0;
+}
+
+.create-itinerary-btn {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.create-itinerary-btn:hover {
+  background-color: #3367d6;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4285f4;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  color: #4285f4;
+  margin-bottom: 20px;
+}
+
+.empty-state h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: #666;
+  max-width: 500px;
+  margin-bottom: 20px;
+}
+
+.create-first-itinerary-btn {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.create-first-itinerary-btn:hover {
+  background-color: #3367d6;
+}
+
+.itineraries-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.itinerary-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.itinerary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.itinerary-card-header {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.itinerary-card-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 30px;
+  font-size: 12px;
+  color: white;
+}
+
+.status-draft {
+  background-color: #78909c;
+}
+
+.status-planned {
+  background-color: #4285f4;
+}
+
+.status-ongoing {
+  background-color: #0f9d58;
+}
+
+.status-completed {
+  background-color: #673ab7;
+}
+
+.itinerary-card-dates, 
+.itinerary-card-destinations, 
+.itinerary-card-budget {
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  color: #555;
+}
+
+.itinerary-card-dates i, 
+.itinerary-card-destinations i, 
+.itinerary-card-budget i {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+  color: #4285f4;
+}
+
+.itinerary-card-destinations span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itinerary-card-actions {
+  padding: 15px;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.edit-btn, .delete-btn {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-btn i, .delete-btn i {
+  margin-right: 5px;
+}
+
+.edit-btn {
+  background-color: #f5f5f5;
+  color: #4285f4;
+}
+
+.delete-btn {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.edit-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.delete-btn:hover {
+  background-color: #ffcdd2;
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .itineraries-grid {
+    grid-template-columns: 1fr;
+  }
+}

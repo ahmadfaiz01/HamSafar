@@ -1,0 +1,209 @@
+:root {
+  --navbar-height: 90px; /* Default height for the navbar */
+}
+
+.navbar {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  height: var(--navbar-height, 70px);
+  z-index: 1030; /* High enough to be on top */
+}
+
+body {
+  padding-top: var(--navbar-height); /* Add padding to body equal to navbar height */
+}
+
+/* Apply padding to body when navbar is present */
+body.has-navbar {
+  padding-top: var(--navbar-height, 80px);
+}
+
+/* No padding for home page with hero */
+body.has-hero {
+  padding-top: 0;
+}
+
+.hero-section {
+  margin-top: 0;
+  padding-top: var(--navbar-height);
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+}
+
+.nav-link {
+  position: relative;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+  right: 1rem;
+  height: 2px;
+  background-color: var(--accent-color);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.nav-link.active::after,
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* Add or update these logo styles */
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+  filter: drop-shadow(0 0 2px rgba(255,255,255,0.3));
+  transition: transform 0.3s ease, filter 0.3s ease;
+  margin-right: 8px;
+}
+
+.navbar:hover .navbar-logo {
+  transform: scale(1.05);
+}
+
+.navbar.scrolled .navbar-logo {
+  filter: brightness(1.1);
+}
+
+/* For smaller screens */
+@media (max-width: 576px) {
+  .navbar-logo {
+    height: 32px;
+  }
+  
+  .navbar-brand .fw-bold {
+    font-size: 1.2rem;
+  }
+}
+
+/* Update navbar colors */
+
+.navbar.bg-primary {
+  background-color: var(--primary-color) 
+}
+
+/* Add or update these rules */
+
+/* Ensure transparency when needed */
+.navbar.bg-transparent {
+  background-color: transparent !important;
+  box-shadow: none;
+}
+
+.navbar.bg-transparent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, 
+    rgba(0,0,0,0.6) 0%, 
+    rgba(0,0,0,0.3) 40%,
+    rgba(0,0,0,0) 100%);
+  z-index: -1;
+  opacity: 0.8;
+  transition: opacity .5s ease;
+}
+
+/* Ensure scrolled state has proper coloring */
+.navbar.scrolled {
+  background-color: var(--primary-color) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Fix any Bootstrap overrides that might be causing issues */
+.bg-transparent {
+  background-color: transparent !important;
+}
+
+/* Smooth transition for all navbar elements */
+.navbar * {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Add these for scroll reveal effect */
+
+/* Initial state - slightly transparent and shifted */
+.navbar:not(.scrolled) .navbar-nav .nav-item {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+/* Scrolled state - fully visible */
+.navbar.scrolled .navbar-nav .nav-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered animation delay for each item */
+.navbar-nav .nav-item:nth-child(1) { transition-delay: 0.05s; }
+.navbar-nav .nav-item:nth-child(2) { transition-delay: 0.1s; }
+.navbar-nav .nav-item:nth-child(3) { transition-delay: 0.15s; }
+.navbar-nav .nav-item:nth-child(4) { transition-delay: 0.2s; }
+.navbar-nav .nav-item:nth-child(5) { transition-delay: 0.25s; }
+.navbar-nav .nav-item:nth-child(6) { transition-delay: 0.3s; }
+
+@media (max-width: 991.98px) {
+  .nav-link.active::after,
+  .nav-link:hover::after {
+    left: 0;
+    transform: none;
+    width: 5px;
+    height: 80%;
+    top: 10%;
+  }
+  
+  .navbar-collapse {
+    background-color: var(--primary-color);
+    margin-top: 0.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+  }
+
+  .navbar.bg-transparent .navbar-collapse {
+    background-color: rgba(5, 25, 55, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .navbar-logo {
+    height: 35px;
+  }
+}
+
+.btn-outline-light:hover {
+  background-color: var(--accent-color) !important;
+  color: var(--primary-color) !important;
+  border-color: var(--accent-color) !important;
+}
+
+.navbar .btn {
+  transition: all 0.3s ease;
+}
+
+.navbar .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Fixed 'r' typo */
+  background-color: white !important;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
