@@ -1,0 +1,30 @@
+{
+  "name": "hamsafar",
+  "version": "1.0.0",
+  "description": "AI-Driven Travel Planner and Guide",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm start",
+    "client": "cd client && npm start",
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install",
+    "dev": "concurrently \"npm run server:dev\" \"npm run client\"",
+    "server:dev": "cd server && npm run dev"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@fontsource/roboto": "^5.2.5",
+    "@mui/icons-material": "^7.1.0",
+    "@mui/material": "^7.1.0",
+    "axios": "^1.9.0",
+    "concurrently": "^8.2.2",
+    "firebase": "^11.6.1",
+    "react-datepicker": "^8.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  },
+  "author": "Muhammad Ahmad & Arham Ali",
+  "license": "MIT"
+}
