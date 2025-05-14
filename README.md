@@ -27,8 +27,8 @@ HamSafar is an intelligent travel planning web platform that integrates AI-drive
 - Firebase (Authentication)
 - External APIs:
   - Google Flights/Skyscanner
-  - OpenWeatherMap
-  - Google Maps
+  - Amadeus
+  - Leaflet Maps
   - Gemini AI
 
 ## Getting Started
@@ -68,9 +68,8 @@ hamsafar/
 
 ## Team Members
 
-- Muhammad Ahmad (457226) - Project Lead & Backend Developer
-- Arham Ali - Frontend Developer
-
+- Muhammad Ahmad
+- Arham Ali
 ## License
 
 MIT 
