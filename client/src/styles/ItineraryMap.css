@@ -1,0 +1,141 @@
+.itinerary-map-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+}
+
+.map-header {
+  margin-bottom: 20px;
+}
+
+.map-header h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.map-header p {
+  color: #666;
+  margin: 0;
+}
+
+.map-view {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 30px;
+  border: 1px solid #e0e0e0;
+}
+
+.map-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  display: block;
+}
+
+.map-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  color: #666;
+}
+
+.destinations-list {
+  margin-bottom: 30px;
+}
+
+.destinations-list h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin: 0 0 15px 0;
+}
+
+.map-destinations {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 15px;
+}
+
+.map-destination-item {
+  display: flex;
+  align-items: center;
+  background-color: #f5f9ff;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.destination-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: #4285f4;
+  color: white;
+  border-radius: 50%;
+  margin-right: 12px;
+  font-weight: 500;
+}
+
+.destination-details {
+  flex: 1;
+}
+
+.destination-name {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 3px;
+}
+
+.destination-location {
+  color: #666;
+  font-size: 14px;
+}
+
+.map-disclaimer {
+  background-color: #fffde7;
+  padding: 15px;
+  border-radius: 6px;
+  color: #6d4c41;
+  font-size: 14px;
+  border-left: 4px solid #fdd835;
+}
+
+.empty-map {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.empty-map h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.empty-map p {
+  color: #666;
+  max-width: 500px;
+}
+
+@media (max-width: 768px) {
+  .itinerary-map-container {
+    padding: 15px;
+  }
+  
+  .map-image {
+    height: 300px;
+  }
+  
+  .map-destinations {
+    grid-template-columns: 1fr;
+  }
+}

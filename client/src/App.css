@@ -1,0 +1,729 @@
+:root {
+  --primary-color: #051937;
+  --accent-color: #E5FF1F;
+  --background-color: #f8f9fa;
+  --light-color: #ffffff;
+  --dark-color: #343a40;
+  --text-color: #333333;
+  --gray-color: #6c757d;
+  --transition-speed: 0.3s;
+  --light-blue: #051937;
+}
+
+#root {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.logo {
+  height: 3rem;
+  will-change: filter;
+  transition: filter 300ms;
+  margin-right: 0.5rem;
+}
+
+.section-title {
+  display: inline-block;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 100%;
+  height: 3px;
+  background-color: var(--accent-color);
+  border-radius: 2px;
+}
+
+.feature-card {
+  border-radius: 12px;
+  background-color: white;
+  padding: 1.5rem;
+  height: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  color: var(--primary-color);
+  background-color: rgba(229, 255, 31, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+.btn-accent {
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  font-weight: 500;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-accent:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  color: var(--primary-color);
+}
+
+.btn-accent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.7s ease;
+  z-index: -1;
+}
+
+.btn-accent:hover::before {
+  left: 100%;
+}
+
+.btn-outline-accent {
+  background-color: transparent;
+  border: 2px solid var(--accent-color);
+  color: var(--primary-color);
+  border-radius: 50px;
+  padding: 0.6rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-accent:hover {
+  background-color: var(--accent-color);
+}
+
+.app-container {
+  background-color: var(--background-color);
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.auth-container {
+  max-width: 480px;
+  margin: 2rem auto;
+}
+
+.auth-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.auth-logo {
+  height: 60px;
+  width: auto;
+  margin-bottom: 1.5rem;
+}
+
+/* Add these new button styles */
+
+/* Primary buttons */
+.btn {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease, background-color 0.3s ease;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: -100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+  transition: left 0.6s ease;
+}
+
+.btn:hover::after {
+  left: 100%;
+}
+
+/* Hero buttons */
+.btn-hero {
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  border: none;
+}
+
+.btn-hero:hover {
+  background-color: #ffffff;
+  color: var(--primary-color);
+}
+
+.btn-outline-hero {
+  background-color: transparent;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+}
+
+.btn-outline-hero:hover {
+  background-color: #ffffff;
+  color: var(--primary-color);
+}
+
+/* Primary button */
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-color);
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+/* Feature card buttons */
+.card .btn-accent {
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  border: none;
+}
+
+.card .btn-accent:hover {
+  background-color: var(--primary-color);
+  color: var(--accent-color);
+}
+
+/* Footer link styles */
+.footer-link {
+  position: relative;
+  display: inline-block;
+  padding: 5px 0;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--accent-color);
+  transition: width 0.3s ease;
+}
+
+.footer-link:hover {
+  color: var(--accent-color) !important;
+}
+
+.footer-link:hover::after {
+  width: 100%;
+}
+
+/* Add ChatFAB styles */
+.chat-fab-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+}
+
+.chat-fab {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.chat-fab:hover {
+  transform: translateY(-5px) rotate(5deg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  background-color: var(--primary-color);
+  color: var(--accent-color);
+}
+
+.chat-fab i {
+  font-size: 24px;
+}
+
+.chat-tooltip {
+  position: absolute;
+  bottom: 75px;
+  right: 0;
+  background-color: white;
+  color: var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.chat-tooltip:after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  right: 24px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid white;
+}
+
+/* Animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.chat-fab:not(:hover) {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.2rem;
+  }
+  
+  h2 {
+    font-size: 1.8rem;
+  }
+  
+  .card {
+    margin-bottom: 1rem;
+  }
+  .feature-card {
+    padding: 1rem;
+  }
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .feature-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+  .btn-accent {
+    padding: 0.5rem 1rem;
+  }
+.hover-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-card:hover {
+transform: translateY(-10px);
+ box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+}
+
+  .chat-fab-container {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .chat-fab {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .chat-fab i {
+    font-size: 20px;
+  }
+}
+
+/* Add these animation classes at the end of your file */
+
+/* Custom animations for hero section - start immediately */
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -20px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate__fadeInDown {
+  animation: fadeInDown 0.7s ease-out forwards;
+}
+
+.animate__fadeInUp {
+  animation: fadeInUp 0.7s ease-out forwards;
+}
+
+/* No delays for smoother appearance */
+.animate__delay-1s {
+  animation-delay: 0.1s;
+}
+
+.animate__delay-2s {
+  animation-delay: 0.2s;
+}
+
+.animate__animated {
+  animation-duration: 0.7s;
+  animation-fill-mode: both;
+}
+
+/* Add these styles for the modern footer */
+
+.modern-footer {
+  background-color: var(--primary-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-footer::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(229, 255, 31, 0.05) 0%, rgba(5, 25, 55, 0) 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.footer-brand {
+  font-size: 1.25rem;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+.footer-brand i {
+  color: var(--accent-color);
+  opacity: 0.9;
+}
+
+.footer-heading {
+  color: white;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  margin-bottom: 1.2rem;
+}
+
+.footer-text {
+  opacity: 0.7;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.neon-text {
+  color: var(--accent-color);
+  text-shadow: 0 0 5px rgba(229, 255, 31, 0.5);
+}
+
+.footer-links li {
+  margin-bottom: 0.75rem;
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+  text-decoration: none;
+  position: relative;
+  padding-left: 0;
+  padding-bottom: 2px;
+}
+
+.footer-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--accent-color);
+  transition: width 0.3s;
+}
+
+.footer-link:hover {
+  color: var(--accent-color) !important;
+  text-shadow: 0 0 3px #e5ff1f4d;
+}
+
+.footer-link:hover::after {
+  width: 100%;
+}
+
+.social-icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  transform: translateY(-3px);
+}
+
+.footer-contact li {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.footer-divider {
+  opacity: 0.2;
+  margin: 1rem 0;
+}
+
+.footer-bottom {
+  font-size: 0.85rem;
+}
+
+.footer-legal .footer-link {
+  font-size: 0.85rem;
+}
+
+/* Additional consistency tweaks */
+
+/* Consistent card styling */
+.hover-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Consistent icons */
+.feature-icon {
+  color: var(--primary-color);
+  background-color: rgba(229, 255, 31, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+/* Clean, minimal footer */
+.footer-heading {
+  color: white;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  color: var(--accent-color);
+}
+
+/* Make CTA section more cohesive */
+.bg-primary {
+  background-color: var(--primary-color) !important;
+}
+
+.bg-primary .btn-accent:hover {
+  background-color: white;
+}
+
+/* Add styles for hero image swipe effect */
+
+.hero-image-container {
+  position: relative;
+  height: 85vh;
+  overflow: hidden;
+}
+
+.hero-slide {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: left 0.8s ease-in-out;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.image-navigation {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  z-index: 5;
+}
+
+.nav-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  margin: 0 5px;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nav-dot.active {
+  background-color: var(--accent-color);
+}
+
+.ticket-planner-image {
+  transform: perspective(1000px) rotateY(-15deg);
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.ticket-planner-image:hover {
+  transform: perspective(1000px) rotateY(0);
+  box-shadow: 0 20px 40px rgba(5, 25, 55, 0.2);
+}
+
+.footer-logo {
+  height: 35px;
+  width: auto;
+  filter: brightness(1.2);
+  opacity: 0.9;
+}
+
+/* Add this to fix potential bootstrap overwrites */
+
+/* Bootstrap sometimes adds background-color to bg-transparent 
+   This ensures it stays truly transparent */
+.bg-transparent {
+  background-color: transparent !important;
+}
+
+/* Make sure hero section properly aligns with transparent navbar */
+.hero-section {
+  position: relative;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* Global transition settings */
+
+/* Ensure smooth transitions throughout the site */
+.transition-all {
+  transition: all var(--transition-speed) ease-in-out;
+}
+
+.transition-transform {
+  transition: transform var(--transition-speed) ease-in-out;
+}
+
+.transition-bg {
+  transition: background-color var(--transition-speed) ease-in-out;
+}
+
+/* Navbar specific global styles */
+.home-navbar:not(.scrolled) {
+  background-color: transparent !important;
+}
+
+.navbar.scrolled {
+  background-color: var(--primary-color) !important;
+}
+
+/* Adjust body padding for fixed navbar */
+body {
+  padding-top: 0;
+}
+
+/* Add to App.css */
+
+/* Content page wrapper with padding for navbar */
+.page-wrapper.content-page {
+  padding-top: var(--navbar-height, 80px);
+}
+
+/* Make sure content pages have minimum height */
+.page-wrapper {
+  min-height: calc(100vh - var(--navbar-height, 80px));
+}
+
+/* Main element should be full height */
+main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}

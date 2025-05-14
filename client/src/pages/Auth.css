@@ -1,0 +1,48 @@
+.auth-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border: none;
+  margin-bottom: 2rem;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #6c757d;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.divider span {
+  padding: 0 10px;
+}
+
+.btn-outline-dark:hover {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.form-text {
+  font-size: 0.85rem;
+}
+
+.auth-container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.btn-link {
+  text-decoration: none;
+  padding: 0;
+  color: #007bff;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
