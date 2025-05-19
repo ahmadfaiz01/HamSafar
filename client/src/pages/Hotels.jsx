@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import HotelSearchForm from '../components/hotel/HotelSearchForm';
 import HotelCard from '../components/hotel/HotelCard';
-import PopularPakistanHotels from '../components/hotel/PopularPakistanHotels';
+import PopularDestinations from '../components/hotel/PopularDestinations';
 import { searchHotels, getCities } from '../services/hotelService';
 import './Hotels.css';
 
@@ -19,6 +19,7 @@ const Hotels = () => {
   
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [citiesLoading, setCitiesLoading] = useState(true);
   const [searchPerformed, setSearchPerformed] = useState(false);
   const [error, setError] = useState(null);
   const [cities, setCities] = useState([]);
@@ -30,6 +31,19 @@ const Hotels = () => {
       setError(null);
       
       console.log('Searching hotels with:', searchData);
+      
+      // If searchData is an event (form submission), prevent default and extract data
+      if (searchData && searchData.preventDefault) {
+        searchData.preventDefault();
+        searchData = {
+          destination,
+          checkIn,
+          checkOut,
+          rooms,
+          adults,
+          children
+        };
+      }
       
       // Update URL with search parameters
       const params = new URLSearchParams();
@@ -48,21 +62,17 @@ const Hotels = () => {
       const results = await searchHotels(searchData);
       console.log('Search results:', results);
       
-      if (results.success) {
-        setHotels(results.data);
-        setSearchPerformed(true);
-      } else {
-        setError(results.error || 'Failed to search hotels');
-        setHotels([]);
-      }
+      // Update state with results
+      setHotels(results);
+      setSearchPerformed(true);
     } catch (err) {
       console.error('Error during hotel search:', err);
-      setError('An unexpected error occurred');
+      setError('An unexpected error occurred while searching for hotels');
       setHotels([]);
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
+  }, [navigate, destination, checkIn, checkOut, rooms, adults, children]);
   
   // Initialize search form from URL parameters
   useEffect(() => {
@@ -97,15 +107,49 @@ const Hotels = () => {
     }
   }, [searchParams, handleSearch]);
   
-  // Load available cities - now directly from the service
+  // Load available cities from MongoDB
   useEffect(() => {
     const loadCities = async () => {
       try {
+        setCitiesLoading(true);
         const citiesData = await getCities();
-        setCities(citiesData || []);
+        console.log('Cities loaded from MongoDB:', citiesData);
+        
+        // Make sure we have valid data
+        if (Array.isArray(citiesData) && citiesData.length > 0) {
+          setCities(citiesData);
+        } else {
+          console.warn('No cities returned from API, using fallback data');
+          setCities([
+            { name: 'Islamabad', properties: 3 },
+            { name: 'Lahore', properties: 3 },
+            { name: 'Karachi', properties: 3 },
+            { name: 'Murree', properties: 1 },
+            { name: 'Swat', properties: 1 },
+            { name: 'Naran', properties: 1 },
+            { name: 'Hunza', properties: 1 },
+            { name: 'Skardu', properties: 1 },
+            { name: 'Peshawar', properties: 1 },
+            { name: 'Multan', properties: 1 }
+          ]);
+        }
       } catch (err) {
         console.error('Error loading cities:', err);
-        setError('Failed to load cities');
+        // Use fallback data on error
+        setCities([
+          { name: 'Islamabad', properties: 3 },
+          { name: 'Lahore', properties: 3 },
+          { name: 'Karachi', properties: 3 },
+          { name: 'Murree', properties: 1 },
+          { name: 'Swat', properties: 1 },
+          { name: 'Naran', properties: 1 },
+          { name: 'Hunza', properties: 1 },
+          { name: 'Skardu', properties: 1 },
+          { name: 'Peshawar', properties: 1 },
+          { name: 'Multan', properties: 1 }
+        ]);
+      } finally {
+        setCitiesLoading(false);
       }
     };
     
@@ -124,6 +168,19 @@ const Hotels = () => {
   const formatDate = (date) => {
     if (!date) return '';
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
+  };
+
+  // Handle destination selection from PopularDestinations
+  const handleDestinationSelect = (cityName) => {
+    setDestination(cityName);
+    handleSearch({
+      destination: cityName,
+      checkIn,
+      checkOut,
+      rooms,
+      adults,
+      children
+    });
   };
 
   return (
@@ -181,7 +238,7 @@ const Hotels = () => {
                 {hotels.map(hotel => (
                   <HotelCard 
                     key={hotel._id}
-                    hotel={hotel}
+                    hotel={hotel} // Make sure the full hotel object is passed
                     checkIn={checkIn}
                     checkOut={checkOut}
                     nights={calculateNights()}
@@ -194,17 +251,25 @@ const Hotels = () => {
             <div className="no-results">
               <i className="fas fa-search"></i>
               <h3>No hotels found</h3>
-              <p>We couldn't find any hotels matching your search criteria. Try changing your search or explore popular hotels below.</p>
+              <p>We couldn't find any hotels matching your search criteria. Try changing your search or explore popular destinations below.</p>
               
-              {/* Show Pakistan hotels even after failed search */}
+              {/* Show Popular Destinations after failed search */}
               <div className="mt-5">
-                <PopularPakistanHotels />
+                <PopularDestinations 
+                  destinations={cities} 
+                  loading={citiesLoading}
+                  onSelectDestination={handleDestinationSelect}
+                />
               </div>
             </div>
           )
         ) : (
-          /* Show Pakistan hotels when no search has been performed */
-          <PopularPakistanHotels />
+          /* Show Popular Destinations when no search has been performed */
+          <PopularDestinations 
+            destinations={cities} 
+            loading={citiesLoading}
+            onSelectDestination={handleDestinationSelect}
+          />
         )}
       </div>
     </div>

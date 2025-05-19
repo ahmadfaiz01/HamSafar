@@ -8,80 +8,133 @@ const HotelFilter = ({ filters, handleFilterChange, toggleAmenity }) => {
   ];
 
   return (
-    <div className="hotel-filters">
+    <div className="hotel-filter">
+      <h4 className="filter-heading">Filters</h4>
+      
+      {/* Price Range Filter */}
       <div className="filter-section">
-        <h4>Price per night (PKR)</h4>
-        <input 
-          type="range" 
-          min="0" 
-          max="30000" 
-          step="1000"
-          value={filters.priceRange[1]} 
-          onChange={(e) => handleFilterChange('priceRange', [0, parseInt(e.target.value)])}
-          className="form-range"
-        />
-        <div className="price-range-display">
-          <span>Rs. {filters.priceRange[0].toLocaleString()}</span>
-          <span>Rs. {filters.priceRange[1].toLocaleString()}</span>
+        <h5 className="filter-title">Price Range</h5>
+        <div className="price-range">
+          <div className="price-slider">
+            <input
+              type="range"
+              min="0"
+              max="50000"
+              step="1000"
+              value={filters.priceRange[1]}
+              onChange={(e) => handleFilterChange('priceRange', [0, parseInt(e.target.value)])}
+              className="form-range"
+            />
+          </div>
+          <div className="price-inputs d-flex justify-content-between">
+            <span>Rs. 0</span>
+            <span>Rs. {filters.priceRange[1]}</span>
+          </div>
         </div>
       </div>
       
+      {/* Rating Filter - FIX HERE */}
       <div className="filter-section">
-        <h4>Star Rating</h4>
-        <div className="star-rating-filter">
-          {[5, 4, 3, 2, 1].map((star) => (
-            <div key={star} className="form-check">
-              <input
-                id={`star-${star}`}
-                className="form-check-input"
-                type="radio"
-                name="star-rating"
-                checked={filters.rating === star}
-                onChange={() => handleFilterChange('rating', star)}
-              />
-              <label htmlFor={`star-${star}`} className="form-check-label">
-                {Array(star).fill(0).map((_, i) => (
-                  <i key={i} className="fas fa-star text-warning"></i>
+        <h5 className="filter-title">Rating</h5>
+        <div className="rating-options">
+          {/* Add d-flex to make stars display horizontally */}
+          <div className="rating-option d-flex align-items-center" onClick={() => handleFilterChange('rating', 4)}>
+            <input
+              type="radio"
+              id="rating-4"
+              name="rating"
+              checked={filters.rating === 4}
+              onChange={() => {}}
+              className="me-2"
+            />
+            <label htmlFor="rating-4" className="d-flex align-items-center">
+              <div className="stars d-flex">
+                {[1, 2, 3, 4].map((star) => (
+                  <i key={star} className="fas fa-star text-warning"></i>
                 ))}
-                {star === 1 ? ' & up' : ' & up'}
+                <i className="far fa-star text-warning"></i>
+                <span className="ms-2">& up</span>
+              </div>
+            </label>
+          </div>
+          
+          <div className="rating-option d-flex align-items-center" onClick={() => handleFilterChange('rating', 3)}>
+            <input
+              type="radio"
+              id="rating-3"
+              name="rating"
+              checked={filters.rating === 3}
+              onChange={() => {}}
+              className="me-2"
+            />
+            <label htmlFor="rating-3" className="d-flex align-items-center">
+              <div className="stars d-flex">
+                {[1, 2, 3].map((star) => (
+                  <i key={star} className="fas fa-star text-warning"></i>
+                ))}
+                {[1, 2].map((star) => (
+                  <i key={star} className="far fa-star text-warning"></i>
+                ))}
+                <span className="ms-2">& up</span>
+              </div>
+            </label>
+          </div>
+          
+          <div className="rating-option d-flex align-items-center" onClick={() => handleFilterChange('rating', 2)}>
+            <input
+              type="radio"
+              id="rating-2"
+              name="rating"
+              checked={filters.rating === 2}
+              onChange={() => {}}
+              className="me-2"
+            />
+            <label htmlFor="rating-2" className="d-flex align-items-center">
+              <div className="stars d-flex">
+                {[1, 2].map((star) => (
+                  <i key={star} className="fas fa-star text-warning"></i>
+                ))}
+                {[1, 2, 3].map((star) => (
+                  <i key={star} className="far fa-star text-warning"></i>
+                ))}
+                <span className="ms-2">& up</span>
+              </div>
+            </label>
+          </div>
+          
+          <div className="rating-option d-flex align-items-center" onClick={() => handleFilterChange('rating', 0)}>
+            <input
+              type="radio"
+              id="rating-any"
+              name="rating"
+              checked={filters.rating === 0}
+              onChange={() => {}}
+              className="me-2"
+            />
+            <label htmlFor="rating-any">Any Rating</label>
+          </div>
+        </div>
+      </div>
+      
+      {/* Amenities Filter */}
+      <div className="filter-section">
+        <h5 className="filter-title">Amenities</h5>
+        <div className="amenities-list">
+          {["Free Wifi", "Pool", "Gym", "Restaurant", "Parking", "Room Service"].map((amenity) => (
+            <div key={amenity} className="form-check">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id={`amenity-${amenity}`}
+                checked={filters.amenities.includes(amenity)}
+                onChange={() => toggleAmenity(amenity)}
+              />
+              <label className="form-check-label" htmlFor={`amenity-${amenity}`}>
+                {amenity}
               </label>
             </div>
           ))}
-          {filters.rating > 0 && (
-            <button 
-              className="btn btn-sm btn-link p-0 mt-1"
-              onClick={() => handleFilterChange('rating', 0)}
-            >
-              Clear rating filter
-            </button>
-          )}
         </div>
-      </div>
-      
-      <div className="filter-section">
-        <h4>Amenities</h4>
-        {amenitiesList.map((amenity, index) => (
-          <div key={index} className="form-check">
-            <input
-              id={`amenity-${index}`}
-              className="form-check-input"
-              type="checkbox"
-              checked={filters.amenities.includes(amenity)}
-              onChange={() => toggleAmenity(amenity)}
-            />
-            <label htmlFor={`amenity-${index}`} className="form-check-label">
-              {amenity}
-            </label>
-          </div>
-        ))}
-        {filters.amenities.length > 0 && (
-          <button 
-            className="btn btn-sm btn-link p-0 mt-1"
-            onClick={() => handleFilterChange('amenities', [])}
-          >
-            Clear amenities
-          </button>
-        )}
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
@@ -43,11 +44,12 @@ const HotelBooking = () => {
   const [popularDestinations, setPopularDestinations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingMetadata, setLoadingMetadata] = useState(true);
-  const [, setError] = useState(null);
+  const [searchPerformed, setSearchPerformed] = useState(false); // Add this line
+  const [error, setError] = useState(null);
   
   // Filters state
   const [filters, setFilters] = useState({
-    priceRange: [0, 30000],
+    priceRange: [0, 50000], // Increase the max price to 50,000 to include more hotels
     rating: 0,
     amenities: [],
     sortBy: 'recommended'
@@ -98,57 +100,87 @@ const HotelBooking = () => {
   // Perform search if URL has destination parameter
   useEffect(() => {
     if (searchParams.get('destination')) {
-      handleSearch();
+      // Call handleSearch with constructed params object
+      handleSearch({
+        destination: searchParams.get('destination'),
+        checkIn: searchParams.get('checkIn') ? new Date(searchParams.get('checkIn')) : checkIn,
+        checkOut: searchParams.get('checkOut') ? new Date(searchParams.get('checkOut')) : checkOut,
+        rooms: parseInt(searchParams.get('rooms')) || rooms,
+        adults: parseInt(searchParams.get('adults')) || adults,
+        children: parseInt(searchParams.get('children')) || children
+      });
     }
-  }, [searchParams]);
+  }, [searchParams]); // Keep the dependencies
   
   // Handle search submission
-  async function handleSearch(e) {
-    if (e) e.preventDefault();
-
-    if (!destination) {
-      alert('Please enter a destination');
-      return;
-    }
-
-    // Update URL with search parameters
-    const params = new URLSearchParams();
-    params.set('destination', destination);
-    params.set('checkIn', checkIn.toISOString().split('T')[0]);
-    params.set('checkOut', checkOut.toISOString().split('T')[0]);
-    params.set('rooms', rooms);
-    params.set('adults', adults);
-    params.set('children', children);
-
-    navigate(`/hotels?${params.toString()}`);
-
-    // Search hotels
-    setLoading(true);
-    setError(null);
-
+  const handleSearch = async (searchData) => {
     try {
-      const searchParams = {
-        destination,
-        checkIn: checkIn.toISOString().split('T')[0],
-        checkOut: checkOut.toISOString().split('T')[0],
-        rooms,
-        adults,
-        children,
-        minPrice: filters.priceRange[0],
-        maxPrice: filters.priceRange[1],
-        rating: filters.rating > 0 ? filters.rating : undefined,
-        amenities: filters.amenities.length > 0 ? filters.amenities.join(',') : undefined
-      };
-
-      const result = await searchHotels(searchParams);
-      setHotels(result.data);
-    } catch (error) {
-      console.error('Error searching hotels:', error);
-      setError('Failed to search hotels. Please try again later.');
+      setLoading(true);
+      setError(null);
+      
+      // If searchData is not provided, use the current state values
+      if (!searchData) {
+        searchData = {
+          destination,
+          checkIn,
+          checkOut,
+          rooms,
+          adults,
+          children
+        };
+      }
+      
+      console.log('Searching hotels with:', searchData);
+      
+      // Update URL with search parameters
+      const params = new URLSearchParams();
+      if (searchData.destination) params.set('destination', searchData.destination);
+      if (searchData.checkIn) params.set('checkIn', searchData.checkIn instanceof Date ? 
+        searchData.checkIn.toISOString().split('T')[0] : searchData.checkIn);
+      if (searchData.checkOut) params.set('checkOut', searchData.checkOut instanceof Date ? 
+        searchData.checkOut.toISOString().split('T')[0] : searchData.checkOut);
+      if (searchData.rooms) params.set('rooms', searchData.rooms);
+      if (searchData.adults) params.set('adults', searchData.adults);
+      if (searchData.children) params.set('children', searchData.children);
+    
+      // Update the URL
+      navigate(`/hotels?${params.toString()}`);
+    
+      // Perform search
+      const results = await searchHotels(searchData);
+      console.log('Search results:', results);
+    
+      // Update state with results
+      setHotels(results);
+      setSearchPerformed(true);
+    } catch (err) {
+      console.error('Error during hotel search:', err);
+      setError('An unexpected error occurred while searching for hotels');
+      setHotels([]);
     } finally {
       setLoading(false);
     }
   }
+  
+  // Handle filter submission
+  const handleFilterSubmit = (event) => {
+    event.preventDefault();
+    
+    // Extract filter values from the form
+    const formData = new FormData(event.target);
+    const priceRange = formData.get('priceRange').split(',').map(Number);
+    const rating = Number(formData.get('rating'));
+    const amenities = formData.getAll('amenities');
+    const sortBy = formData.get('sortBy');
+    
+    // Update filters state
+    setFilters({
+      priceRange,
+      rating,
+      amenities,
+      sortBy
+    });
+  };
   
   // Handle filter changes
   const handleFilterChange = (filterType, value) => {
@@ -178,14 +210,17 @@ const HotelBooking = () => {
   };
   
   // Apply filters and sorting to hotel results
+  // Fix the getFilteredHotels function to use the correct property names
   const getFilteredHotels = () => {
-    if (!hotels.length) return [];
+    if (!hotels || !hotels.length) return [];
+    
+    console.log('Filtering hotels:', hotels); // Add this to debug
     
     let filtered = [...hotels];
     
-    // Apply price filter
+    // Apply price filter - FIXED: use pricePerNight instead of price
     filtered = filtered.filter(hotel => 
-      hotel.price >= filters.priceRange[0] && hotel.price <= filters.priceRange[1]
+      hotel.pricePerNight >= filters.priceRange[0] && hotel.pricePerNight <= filters.priceRange[1]
     );
     
     // Apply rating filter
@@ -193,31 +228,40 @@ const HotelBooking = () => {
       filtered = filtered.filter(hotel => hotel.rating >= filters.rating);
     }
     
-    // Apply amenities filter
+    // Apply amenities filter - make sure hotel.amenities exists
     if (filters.amenities.length > 0) {
       filtered = filtered.filter(hotel => 
-        filters.amenities.every(amenity => hotel.amenities.includes(amenity))
+        hotel.amenities && filters.amenities.every(amenity => hotel.amenities.includes(amenity))
       );
     }
     
-    // Apply sorting
+    // Apply sorting - FIXED: use pricePerNight instead of price
     switch (filters.sortBy) {
       case 'price-low':
-        filtered.sort((a, b) => a.price - b.price);
+        filtered.sort((a, b) => a.pricePerNight - b.pricePerNight);
         break;
       case 'price-high':
-        filtered.sort((a, b) => b.price - a.price);
+        filtered.sort((a, b) => b.pricePerNight - a.pricePerNight);
         break;
       case 'rating':
         filtered.sort((a, b) => b.rating - a.rating);
         break;
       case 'recommended':
       default:
-        filtered.sort((a, b) => (b.userRating * 0.7 + (30000 - b.price) * 0.00003) - 
-                             (a.userRating * 0.7 + (30000 - a.price) * 0.00003));
+        // FIXED: handle missing userRating and use pricePerNight
+        filtered.sort((a, b) => {
+          const aUserRating = a.rating || 0;
+          const bUserRating = b.rating || 0;
+          const aPrice = a.pricePerNight || 0;
+          const bPrice = b.pricePerNight || 0;
+          
+          return (bUserRating * 0.7 + (30000 - bPrice) * 0.00003) - 
+                 (aUserRating * 0.7 + (30000 - aPrice) * 0.00003);
+        });
         break;
     }
     
+    console.log('Filtered hotels:', filtered); // Add this to debug
     return filtered;
   };
   
@@ -226,7 +270,17 @@ const HotelBooking = () => {
   // Handle destination selection from popular destinations
   const selectDestination = (destinationName) => {
     setDestination(destinationName);
-    setTimeout(() => handleSearch(), 0);
+    // Use setTimeout and call handleSearch with proper parameters
+    setTimeout(() => {
+      handleSearch({
+        destination: destinationName,
+        checkIn,
+        checkOut,
+        rooms,
+        adults,
+        children
+      });
+    }, 0);
   };
   
   return (
@@ -307,7 +361,13 @@ const HotelBooking = () => {
                         {filteredHotels.map((hotel) => (
                           <HotelCard
                             key={hotel._id}
-                            hotel={hotel}
+                            hotel={{
+                              ...hotel,
+                              // Ensure the hotel object has all properties needed by HotelCard
+                              price: hotel.pricePerNight, // Map pricePerNight to price if your HotelCard uses price
+                              imageUrl: hotel.images && hotel.images.length > 0 ? hotel.images[0] : '',
+                              // Add any other mappings needed
+                            }}
                             checkIn={checkIn}
                             checkOut={checkOut}
                             nights={calculateNights()}

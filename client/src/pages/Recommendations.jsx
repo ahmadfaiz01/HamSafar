@@ -1,15 +1,24 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { getNearbyAttractions, addToWishlist } from '../services/locationService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUtensils, faCoffee, faTree, faLandmark, faShoppingBag, 
+         faMapMarkerAlt, faTicketAlt, faUmbrellaBeach, faMountain, 
+         faMonument, faQuestionCircle, faStar } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../context/AuthContext';
+import { 
+  getCurrentLocation, 
+  saveUserCoordinates, 
+  getUserCoordinates, 
+  getNearbyAttractions, 
+  addToWishlist 
+} from '../services/locationService';
 import { getUserProfile } from '../services/userService';
-import { getAuth } from 'firebase/auth';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import './Recommendations.css';
+import L from 'leaflet';
+import '../styles/Recommendations.css';
 
 // Fix Leaflet icon issues
 delete L.Icon.Default.prototype._getIconUrl;
@@ -19,75 +28,39 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-// Custom icons for different categories
-const createCategoryIcon = (category) => {
-  const iconMap = {
-    'restaurant': 'utensils',
-    'cafe': 'coffee',
-    'park': 'tree',
-    'museum': 'landmark',
-    'shopping': 'shopping-bag',
-    'attraction': 'map-marker-alt',
-    'entertainment': 'ticket-alt',
-    'beach': 'umbrella-beach',
-    'mountain': 'mountain',
-    'historical': 'monument',
-  };
-
-  const iconName = iconMap[category.toLowerCase()] || 'map-pin';
-  const iconColor = getCategoryColor(category);
-
-  return L.divIcon({
-    html: `<i class="fas fa-${iconName}" style="color: ${iconColor}; font-size: 24px; text-shadow: 2px 2px 3px rgba(0,0,0,0.3);"></i>`,
-    className: 'custom-marker-icon',
-    iconSize: [30, 30],
-    iconAnchor: [15, 30],
-    popupAnchor: [0, -30]
-  });
-};
-
-// Get color based on category
-function getCategoryColor(category) {
-  const colorMap = {
-    'restaurant': '#FF5722',
-    'cafe': '#795548',
-    'park': '#4CAF50',
-    'museum': '#673AB7',
-    'shopping': '#E91E63',
-    'attraction': '#2196F3',
-    'entertainment': '#FF9800',
-    'beach': '#00BCD4',
-    'mountain': '#607D8B',
-    'historical': '#9C27B0',
-  };
-
-  return colorMap[category.toLowerCase()] || '#3F51B5';
-}
-
 const Recommendations = () => {
-  const { currentUser } = useAuth();
-  const [userProfile, setUserProfile] = useState(null);
-  const [recommendations, setRecommendations] = useState([]);
+  // State variables
   const [loading, setLoading] = useState(true);
-  const [selectedPlace, setSelectedPlace] = useState(null);
-  const [mapCenter, setMapCenter] = useState([33.6844, 73.0479]); // Default: Islamabad
-  const [mapZoom, setMapZoom] = useState(13);
   const [userCoords, setUserCoords] = useState(null);
-  const [selectedCity, setSelectedCity] = useState(null);
+  const [mapCenter, setMapCenter] = useState([33.6844, 73.0479]); // Default: Islamabad
+  const [zoom, setZoom] = useState(12);
+  const [recommendations, setRecommendations] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
+  const [locationModalVisible, setLocationModalVisible] = useState(false);
+  const [selectedCity, setSelectedCity] = useState('');
+  const [savingToWishlist, setSavingToWishlist] = useState(false);
+  
+  // Hooks
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
+  // City coordinates for quick selection
   const cityCoordinates = {
     islamabad: { latitude: 33.6844, longitude: 73.0479 },
-    rahimyarkhan: { latitude: 28.4212, longitude: 70.2989 },
     lahore: { latitude: 31.5204, longitude: 74.3587 },
-    karachi: { latitude: 24.8607, longitude: 67.0011 }
+    karachi: { latitude: 24.8607, longitude: 67.0011 },
+    peshawar: { latitude: 34.0151, longitude: 71.5249 },
+    quetta: { latitude: 30.1798, longitude: 66.9750 },
+    multan: { latitude: 30.1575, longitude: 71.5249 }
   };
 
+  // Get user location and recommendations on component mount
   useEffect(() => {
     const fetchUserProfileAndRecommendations = async () => {
       try {
         setLoading(true);
         
-        // Step 1: Get user profile from Firestore (if logged in)
+        // Step 1: Get user profile from Firestore if logged in
         let profile = null;
         if (currentUser) {
           try {
@@ -95,14 +68,14 @@ const Recommendations = () => {
             setUserProfile(profile);
           } catch (profileError) {
             console.error("Error loading profile:", profileError);
-            // Continue even if profile loading fails
           }
         }
 
-        // Step 2: Get user location (from profile or detect current)
+        // Step 2: Get user location (from profile or browser)
         let coords;
+        
+        // First, try to get stored coordinates from Firestore
         if (profile?.coordinates?.latitude && profile?.coordinates?.longitude) {
-          // Use stored coordinates
           coords = {
             latitude: profile.coordinates.latitude,
             longitude: profile.coordinates.longitude
@@ -111,49 +84,61 @@ const Recommendations = () => {
           setUserCoords(coords);
           setMapCenter([coords.latitude, coords.longitude]);
         } else {
-          // Get current location if permission granted
-          try {
-            coords = await getCurrentLocation();
-            console.log("Got current location:", coords);
-          } catch (locationError) {
-            console.error("Location error:", locationError);
-            // getCurrentLocation already handles fallbacks
+          // If no stored coordinates, check if we need to show location modal
+          if (!currentUser) {
+            // For non-logged in users, show location modal
+            setLocationModalVisible(true);
+          } else {
+            // For logged in users without saved location, try to get current location
+            try {
+              coords = await getCurrentLocation();
+              console.log("Got current location:", coords);
+              setUserCoords(coords);
+              setMapCenter([coords.latitude, coords.longitude]);
+              
+              // Save coordinates to Firestore
+              if (currentUser) {
+                await saveUserCoordinates(currentUser.uid, coords);
+              }
+            } catch (locationError) {
+              console.error("Location error:", locationError);
+              setLocationModalVisible(true);
+            }
           }
         }
 
         // Step 3: Get recommendations based on location and preferences
         if (coords) {
           console.log("Getting attractions with coords:", coords);
-          // Use default interests if none in profile
           const interests = profile?.preferences?.interests || ['food', 'nature', 'shopping', 'history'];
+          
           try {
-            // IMPORTANT: getNearbyAttractions is no longer async
-            const attractions = getNearbyAttractions(coords, interests);
+            const attractions = await getNearbyAttractions(coords, interests);
             console.log("Got attractions:", attractions);
             setRecommendations(attractions);
           } catch (attractionsError) {
             console.error("Error getting attractions:", attractionsError);
             toast.error("Could not load recommendations. Using sample data instead.");
             
-            // If API call fails, use static mock data
+            // Fallback to static data if API call fails
             setRecommendations([
               {
-                id: 'faisal-mosque',
+                id: "sample1",
                 name: "Faisal Mosque",
-                category: "Attraction",
-                description: "The Faisal Mosque is the national mosque of Pakistan located in Islamabad.",
+                category: "Religious",
+                description: "The Faisal Mosque is the national mosque of Pakistan.",
                 coordinates: { latitude: 33.7295, longitude: 73.0372 },
-                imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrn3_K9yyFkpcgCvLGH33BGS80-Qz2o7gMGA&s",
-                distance: 5600
+                rating: 4.8,
+                imageUrl: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Faisal_Mosque_%28full_view%29.jpg"
               },
               {
-                id: 'pakistan-monument',
+                id: "sample2",
                 name: "Pakistan Monument",
                 category: "Historical",
-                description: "Pakistan Monument is a national monument representing the nation's history.",
+                description: "The Pakistan Monument is a national monument representing the nation's history.",
                 coordinates: { latitude: 33.6936, longitude: 73.0666 },
-                imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrn3_K9yyFkpcgCvLGH33BGS80-Qz2o7gMGA&s",
-                distance: 1200
+                rating: 4.7,
+                imageUrl: "https://upload.wikimedia.org/wikipedia/commons/8/89/Pakistan_Monument_at_Night.jpg"
               }
             ]);
           }
@@ -169,368 +154,444 @@ const Recommendations = () => {
     fetchUserProfileAndRecommendations();
   }, [currentUser]);
 
-  // Get current location using the browser's geolocation API
-  const getCurrentLocation = () => {
-    return new Promise((resolve) => {
-      if (!navigator.geolocation) {
-        toast.error('Geolocation is not supported by your browser');
-        useDefaultLocation(resolve);
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const coords = { latitude, longitude };
-          setUserCoords(coords);
-          setMapCenter([latitude, longitude]);
-          console.log("Successfully got user location:", coords);
-          resolve(coords);
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          toast.error('Could not get your location. Using default location.');
-          useDefaultLocation(resolve);
-        },
-        { 
-          timeout: 10000, // 10 seconds
-          enableHighAccuracy: true
-        }
-      );
-    });
-  };
-
-  const useDefaultLocation = (resolve) => {
-    // Use Islamabad as default location
-    const defaultCoords = { latitude: 33.6844, longitude: 73.0479 };
-    console.log("Using default location:", defaultCoords);
-    setUserCoords(defaultCoords);
-    setMapCenter([defaultCoords.latitude, defaultCoords.longitude]);
-    resolve(defaultCoords);
-  };
-
-  // Handle adding a place to wishlist
-  const handleAddToWishlist = async (place) => {
-    try {
-      if (!currentUser) {
-        toast.error('Please log in to add to wishlist');
-        return;
-      }
-
-      await addToWishlist(currentUser.uid, place);
-      toast.success(`Added ${place.name} to your wishlist`);
-
-      // Update the recommendations list to show it's in wishlist
-      setRecommendations(prevRecs =>
-        prevRecs.map(rec =>
-          rec.id === place.id ? { ...rec, isInWishlist: true } : rec
-        )
-      );
-    } catch (error) {
-      console.error('Error adding to wishlist:', error);
-      toast.error('Failed to add to wishlist');
-    }
-  };
-
-  // Zoom to a specific recommendation on the map
-  const focusOnPlace = (place) => {
-    setSelectedPlace(place);
-    setMapCenter([place.coordinates.latitude, place.coordinates.longitude]);
-    setMapZoom(16);
-  };
-
-  // Reset map view to show all recommendations
-  const resetMapView = () => {
-    if (userCoords) {
-      setMapCenter([userCoords.latitude, userCoords.longitude]);
-      setMapZoom(13);
-    }
-    setSelectedPlace(null);
-  };
-  // Debug Firebase connection
-  useEffect(() => {
-    console.log("Firebase auth state:", !!currentUser);
+  // Handle city selection
+  const handleCitySelect = async (city) => {
+    setSelectedCity(city);
+    const coords = cityCoordinates[city];
     
-    // Check if Firebase config is properly loaded
-    try {
-      const auth = getAuth();
-      const authConfig = auth.app.options;
-      console.log("Firebase app initialized:", !!authConfig);
-    } catch (e) {
-      console.error("Error checking Firebase config:", e);
+    if (coords) {
+      setUserCoords(coords);
+      setMapCenter([coords.latitude, coords.longitude]);
+      
+      // Save coordinates to Firestore for logged in users
+      if (currentUser) {
+        await saveUserCoordinates(currentUser.uid, coords);
+      }
+      
+      // Fetch recommendations for selected city
+      try {
+        setLoading(true);
+        const interests = userProfile?.preferences?.interests || ['food', 'nature', 'shopping', 'history'];
+        const attractions = await getNearbyAttractions(coords, interests);
+        setRecommendations(attractions);
+      } catch (error) {
+        console.error("Error getting attractions for city:", error);
+        toast.error("Could not load recommendations for this city");
+      } finally {
+        setLoading(false);
+      }
+      
+      // Close the modal
+      setLocationModalVisible(false);
     }
-  }, [currentUser]);
+  };
 
-  // Fetch recommendations for specific coordinates
-  const fetchRecommendationsForCoords = async (coords) => {
+  // Handle getting current location
+  const handleGetCurrentLocation = async () => {
     try {
       setLoading(true);
+      const coords = await getCurrentLocation();
       
-      // Get user interests if logged in
-      const interests = userProfile?.preferences?.interests || ['food', 'history', 'nature'];
+      setUserCoords(coords);
+      setMapCenter([coords.latitude, coords.longitude]);
       
-      // IMPORTANT: getNearbyAttractions is no longer async
-      const attractions = getNearbyAttractions(coords, interests);
-      console.log("Got attractions for", coords, ":", attractions);
+      // Save coordinates to Firestore for logged in users
+      if (currentUser) {
+        await saveUserCoordinates(currentUser.uid, coords);
+      }
+      
+      // Fetch recommendations
+      const interests = userProfile?.preferences?.interests || ['food', 'nature', 'shopping', 'history'];
+      const attractions = await getNearbyAttractions(coords, interests);
       setRecommendations(attractions);
+      
+      // Close the modal
+      setLocationModalVisible(false);
     } catch (error) {
-      console.error("Error getting attractions:", error);
-      toast.error("Could not load recommendations for this location");
+      console.error("Error getting current location:", error);
+      toast.error("Could not get your current location");
     } finally {
       setLoading(false);
     }
   };
 
-  // City selector component
-  const CitySelector = () => (
-    <div className="city-selector">
-      <h3>Choose a city to explore</h3>
-      <div className="city-buttons">
-        {Object.entries(cityCoordinates).map(([city, coords]) => (
-          <button 
-            key={city}
-            className={`city-button ${selectedCity === city ? 'active' : ''}`}
-            onClick={() => {
-              setSelectedCity(city);
-              setUserCoords(coords);
-              setMapCenter([coords.latitude, coords.longitude]);
-              fetchRecommendationsForCoords(coords);
-            }}
-          >
-            {city.charAt(0).toUpperCase() + city.slice(1)}
-          </button>
-        ))}
-        <button 
-          className={`city-button ${selectedCity === 'current' ? 'active' : ''}`}
-          onClick={() => {
-            setSelectedCity('current');
-            getCurrentLocation();
-          }}
-        >
-          <i className="fas fa-location-arrow"></i> Current Location
+  // Handle adding a place to wishlist
+  const handleAddToWishlist = async (place) => {
+    if (!currentUser) {
+      toast.info('Please log in to save to your wishlist');
+      navigate('/login');
+      return;
+    }
+    
+    try {
+      setSavingToWishlist(true);
+      await addToWishlist(currentUser.uid, place);
+      toast.success(`Added ${place.name} to your wishlist!`);
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      toast.error("Could not add to wishlist");
+    } finally {
+      setSavingToWishlist(false);
+    }
+  };
+
+  // Create custom marker icon based on category
+  const createCategoryIcon = (category = 'default') => {
+    const iconColor = getCategoryColor(category);
+    
+    // Create an SVG directly in JavaScript - no external resources needed
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="24" height="36">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" 
+          fill="${iconColor}" stroke="white" stroke-width="1.5"/>
+        <circle cx="12" cy="9" r="3" fill="white"/>
+      </svg>
+    `;
+    
+    // Create a base64 encoded data URL from the SVG
+    const encodedSVG = encodeURIComponent(svgString)
+      .replace(/'/g, '%27')
+      .replace(/"/g, '%22');
+      
+    const dataUri = `data:image/svg+xml,${encodedSVG}`;
+    
+    // Use the SVG as an icon
+    return L.divIcon({
+      html: `<img src="${dataUri}" alt="${category}" width="24" height="36">`,
+      className: 'custom-marker-icon',
+      iconSize: [24, 36],
+      iconAnchor: [12, 36],
+      popupAnchor: [0, -36]
+    });
+  };
+
+  // Get color based on category
+  function getCategoryColor(category) {
+    const colorMap = {
+      'restaurant': '#FF5722',
+      'cafe': '#795548',
+      'park': '#4CAF50',
+      'museum': '#673AB7',
+      'shopping': '#E91E63',
+      'attraction': '#2196F3',
+      'entertainment': '#FF9800',
+      'beach': '#00BCD4',
+      'mountain': '#607D8B',
+      'historical': '#9C27B0',
+      'religious': '#FFC107',
+      'viewpoint': '#3F51B5'
+    };
+    
+    return colorMap[category.toLowerCase()] || '#757575';
+  }
+
+  // Get icon component based on category
+  function getCategoryIcon(category) {
+    const iconMap = {
+      'restaurant': faUtensils,
+      'cafe': faCoffee,
+      'park': faTree,
+      'museum': faLandmark,
+      'shopping': faShoppingBag,
+      'attraction': faMapMarkerAlt,
+      'entertainment': faTicketAlt,
+      'beach': faUmbrellaBeach,
+      'mountain': faMountain,
+      'historical': faMonument,
+      'religious': faLandmark,
+      'viewpoint': faMountain
+    };
+    
+    return iconMap[category.toLowerCase()] || faQuestionCircle;
+  }
+
+  // Render stars based on rating
+  const renderRatingStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
+    for (let i = 1; i <= 5; i++) {
+      if (i <= fullStars) {
+        stars.push(<FontAwesomeIcon key={i} icon={faStar} className="text-warning" />);
+      } else if (i === fullStars + 1 && hasHalfStar) {
+        stars.push(<FontAwesomeIcon key={i} icon={faStar} className="text-warning" style={{ opacity: 0.5 }} />);
+      } else {
+        stars.push(<FontAwesomeIcon key={i} icon={faStar} className="text-muted" style={{ opacity: 0.3 }} />);
+      }
+    }
+    
+    return stars;
+  };
+
+  // Location selection modal
+  const LocationModal = () => (
+    <div className="location-modal-overlay" onClick={() => setLocationModalVisible(false)}>
+      <div className="location-modal-content" onClick={(e) => e.stopPropagation()}>
+        <h2>Choose Your Location</h2>
+        <p>We need your location to show you nearby recommendations.</p>
+        
+        <button className="btn btn-primary mb-3 w-100" onClick={handleGetCurrentLocation}>
+          <i className="fas fa-location-arrow me-2"></i>
+          Use My Current Location
         </button>
+        
+        <div className="text-center my-3">
+          <span className="divider-text">OR SELECT A CITY</span>
+        </div>
+        
+        <div className="city-grid">
+          {Object.keys(cityCoordinates).map((city) => (
+            <button
+              key={city}
+              className={`city-button ${selectedCity === city ? 'selected' : ''}`}
+              onClick={() => handleCitySelect(city)}
+            >
+              {city.charAt(0).toUpperCase() + city.slice(1)}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
 
-  if (loading) {
-    return (
-      <div className="recommendations-loading-container">
-        <LoadingSpinner />
-        <h3>Finding places just for you...</h3>
-      </div>
-    );
-  }
-
-  if (!currentUser) {
-    return (
-      <div className="recommendations-container">
-        <div className="recommendations-auth-notice">
-          <i className="fas fa-user-lock"></i>
-          <h3>Sign in to see personalized recommendations</h3>
-          <p>Create an account or log in to discover places based on your interests and location.</p>
-          <a href="/login" className="btn-accent">Log in or Sign up</a>
-        </div>
-      </div>
-    );
-  }
+  // Function to get a reliable image source
+  const getReliableImageUrl = (place) => {
+    // If the image URL is from placeholder.com, return a data URI instead
+    if (place.imageUrl?.includes('placeholder.com')) {
+      const color = getCategoryColor(place.category);
+      return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='${encodeURIComponent(color)}'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' fill='white'%3E${encodeURIComponent(place.category || 'Place')}%3C/text%3E%3C/svg%3E`;
+    }
+    
+    // Return the original image URL or a fallback
+    return place.imageUrl || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23e9ecef'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' fill='%236c757d'%3ENo Image%3C/text%3E%3C/svg%3E`;
+  };
 
   return (
-    <div className="recommendations-container">
-      <div className="recommendations-header">
-        <h1>Places You'll Love</h1> 
+    <div className="recommendations-page">
+      <div className="container py-4">
+        <div className="row mb-4">
+          <div className="col">
+            <h1 className="mb-3">Nearby Recommendations</h1>
+            
+            <div className="d-flex align-items-center mb-4">
+              <button
+                className="btn btn-outline-primary me-3"
+                onClick={() => setLocationModalVisible(true)}
+              >
+                <i className="fas fa-map-marker-alt me-2"></i>
+                Change Location
+              </button>
+              
+              {userProfile && (
+                <div className="text-muted">
+                  <small>
+                    Recommendations based on your interests:
+                    {userProfile.preferences?.interests?.map((interest, index) => (
+                      <span key={index} className="badge bg-light text-dark ms-2">
+                        {interest}
+                      </span>
+                    ))}
+                  </small>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
         
-        <div className="location-info">
-          <div className="user-location">
-            <i className="fas fa-map-marker-alt"></i>
-            <span>{userProfile?.location || 'Using your current location'}</span>
+        <div className="row">
+          {/* Map column */}
+          <div className="col-lg-6 mb-4">
+            <div className="card shadow-sm">
+              <div className="card-body p-0" style={{ height: "500px" }}>
+                {loading ? (
+                  <div className="loading-spinner">
+                    <div className="spinner-border text-primary mb-3" role="status">
+                      <span className="visually-hidden">Loading map...</span>
+                    </div>
+                    <p>Loading map and places...</p>
+                  </div>
+                ) : (
+                  <MapContainer
+                    center={mapCenter}
+                    zoom={zoom}
+                    style={{ height: "100%", width: "100%" }}
+                    whenCreated={(map) => {
+                      // When the map is created, we can add event listeners or other logic
+                      console.log("Map created", map);
+                    }}
+                  >
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    />
+                    
+                    {/* User marker - simple div icon rather than an image */}
+                    {userCoords && (
+                      <Marker
+                        position={[userCoords.latitude, userCoords.longitude]}
+                        icon={L.divIcon({
+                          html: `<div style="width:14px;height:14px;background:#2563eb;border-radius:50%;border:3px solid white;box-shadow:0 0 4px rgba(0,0,0,0.3);"></div>`,
+                          className: 'custom-marker-icon',
+                          iconSize: [20, 20],
+                          iconAnchor: [10, 10]
+                        })}
+                      >
+                        <Popup>Your Location</Popup>
+                      </Marker>
+                    )}
+                    
+                    {/* Recommendation markers - using pure SVG */}
+                    {recommendations.map((place) => (
+                      place.coordinates && 
+                      typeof place.coordinates.latitude === 'number' && 
+                      typeof place.coordinates.longitude === 'number' && (
+                        <Marker
+                          key={place.id}
+                          position={[place.coordinates.latitude, place.coordinates.longitude]}
+                          icon={createCategoryIcon(place.category)}
+                        >
+                          <Popup>
+                            <div className="popup-content">
+                              <h5>{place.name}</h5>
+                              <p className="mb-1">
+                                <span style={{ color: getCategoryColor(place.category) }}>●</span>
+                                {' '}{place.category}
+                              </p>
+                              <div className="mb-2">
+                                {renderRatingStars(place.rating)}
+                                <span className="ms-2">({place.rating})</span>
+                              </div>
+                              <button
+                                className="btn btn-sm btn-outline-primary mt-2"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleAddToWishlist(place);
+                                }}
+                              >
+                                Save to Wishlist
+                              </button>
+                            </div>
+                          </Popup>
+                        </Marker>
+                      )
+                    ))}
+                  </MapContainer>
+                )}
+              </div>
+            </div>
           </div>
           
-          <button 
-            className="update-location-btn"
-            onClick={getCurrentLocation}
-          >
-            <i className="fas fa-location-arrow"></i>
-            Update Location
-          </button>
-        </div>
-      </div>
-
-      {/* Add City Selector */}
-      <CitySelector />
-
-      {/* Main content area - map and cards side by side */}
-      <div className="recommendations-main-content">
-        {/* Map Section - Now takes up the left side */}
-        <div className="recommendations-map">
-          {userCoords && (
-            <>
-              <MapContainer 
-                center={mapCenter} 
-                zoom={mapZoom} 
-                style={{ height: '100%', width: '100%', borderRadius: '12px' }}
-                zoomControl={false}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                
-                {/* User location marker */}
-                <Marker 
-                  position={[userCoords.latitude, userCoords.longitude]}
-                  icon={L.divIcon({
-                    html: `<div class="user-location-marker"><i class="fas fa-user"></i></div>`,
-                    className: '',
-                    iconSize: [24, 24]
-                  })}
-                >
-                  <Popup>
-                    <div className="location-popup">
-                      <h4>Your Location</h4>
-                      <p>{userProfile?.location || 'Current location'}</p>
-                    </div>
-                  </Popup>
-                </Marker>
-                
-                {/* Place markers */}
-                {recommendations.map(place => (
-                  <Marker 
-                    key={place.id}
-                    position={[place.coordinates.latitude, place.coordinates.longitude]}
-                    icon={createCategoryIcon(place.category)}
-                  >
-                    <Popup>
-                      <div className="place-popup">
-                        <h3>{place.name}</h3>
-                        <div className="place-category">
-                          <i className={`fas fa-${getCategoryIcon(place.category)}`}></i>
-                          {place.category}
-                        </div>
-                        <p className="place-description">{place.description.substring(0, 80)}...</p>
-                        <div className="popup-actions">
-                          <button 
-                            className={`wishlist-btn-sm ${place.isInWishlist ? 'in-wishlist' : ''}`}
-                            onClick={() => handleAddToWishlist(place)}
-                            disabled={place.isInWishlist}
-                          >
-                            <i className={`${place.isInWishlist ? 'fas' : 'far'} fa-heart`}></i>
-                          </button>
-                          <button 
-                            className="details-btn-sm" 
-                            onClick={() => setSelectedPlace(place)}
-                          >
-                            <i className="fas fa-info-circle"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MapContainer>
-              
-              <div className="map-controls">
-                <button className="map-control-btn" onClick={resetMapView}>
-                  <i className="fas fa-expand-arrows-alt"></i>
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Recommendations Cards - Now takes up the right side */}
-        <div className="recommendations-list">
-          <h2>Recommended Places</h2>
-          
-          {recommendations.length > 0 ? (
-            <div className="recommendations-scroll">
-              {recommendations.map(place => (
-                <div 
-                  key={place.id} 
-                  className={`recommendation-card ${selectedPlace?.id === place.id ? 'selected' : ''}`}
-                  onClick={() => focusOnPlace(place)}
-                >
-                  <div className="recommendation-image">
-                    {place.imageUrl ? (
-                      <img 
-                        src={place.imageUrl}
-                        alt={place.name}
-                        onError={(e) => {
-                          e.target.src = '/images/place-placeholder.jpg';
-                          e.target.onerror = null;
-                        }}
-                      />
-                    ) : (
-                      <div className="placeholder-image">
-                        <i className={`fas fa-${getCategoryIcon(place.category)}`}></i>
-                      </div>
-                    )}
-                    <div className="category-badge" style={{ backgroundColor: getCategoryColor(place.category), height: '30px', width: '60px' }}>
-                      {place.category}
-                    </div>
+          {/* Recommendation cards column */}
+          <div className="col-lg-6">
+            <div className="recommendation-list">
+              {loading ? (
+                <div className="text-center py-5">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading recommendations...</span>
                   </div>
-                  <div className="recommendation-content">
-                    <h4>{place.name}</h4>
-                    <p className="place-distance">{formatDistance(place.distance)}</p>
-                    <p className="place-description">{place.description.substring(0, 80)}...</p>
-                    <div className="card-actions">
-                      <button 
-                        className={`wishlist-btn ${place.isInWishlist ? 'in-wishlist' : ''}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAddToWishlist(place);
-                        }}
-                        disabled={place.isInWishlist}
-                      >
-                        <i className={`${place.isInWishlist ? 'fas' : 'far'} fa-heart`}></i>
-                        {place.isInWishlist ? 'Saved' : 'Add to Wishlist'}
-                      </button>
-                    </div>
-                  </div>
+                  <p className="mt-3">Finding the best places around you...</p>
                 </div>
-              ))}
+              ) : recommendations.length === 0 ? (
+                <div className="text-center py-5">
+                  <div className="mb-3">
+                    <i className="fas fa-map-marker-alt fa-3x text-muted"></i>
+                  </div>
+                  <h3>No recommendations found</h3>
+                  <p className="text-muted">
+                    We couldn't find any places near your location.
+                    Try changing your location or interests.
+                  </p>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => setLocationModalVisible(true)}
+                  >
+                    Change Location
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <div className="mb-3">
+                    <h3>Nearby Places ({recommendations.length})</h3>
+                  </div>
+                  {recommendations.map((place) => (
+                    <div key={place.id} className="card place-card mb-3">
+                      <div className="row g-0">
+                        <div className="col-md-4">
+                          <div className="place-image-container">
+                            <div 
+                              className="place-image" 
+                              style={{ backgroundImage: `url(${getReliableImageUrl(place)})` }}
+                            ></div>
+                            <div className="category-badge" style={{ backgroundColor: getCategoryColor(place.category) }}>
+                              <FontAwesomeIcon icon={getCategoryIcon(place.category)} className="me-2" />
+                              {place.category}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-8">
+                          <div className="card-body">
+                            <div className="d-flex justify-content-between align-items-start">
+                              <h5 className="card-title">{place.name}</h5>
+                              <div>{renderRatingStars(place.rating)}</div>
+                            </div>
+                            
+                            <p className="card-text">{place.description}</p>
+                            
+                            {place.address && (
+                              <p className="card-text small mb-2">
+                                <i className="fas fa-map-marker-alt me-2 text-muted"></i>
+                                {place.address}
+                              </p>
+                            )}
+                            
+                            {place.tags && place.tags.length > 0 && (
+                              <div className="mb-3">
+                                {place.tags.slice(0, 3).map((tag, index) => (
+                                  <span key={index} className="badge bg-light text-dark me-1">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            
+                            <div className="d-flex justify-content-between align-items-center mt-2">
+                              <button
+                                className="btn btn-sm btn-outline-primary"
+                                onClick={() => handleAddToWishlist(place)}
+                                disabled={savingToWishlist}
+                              >
+                                <i className="far fa-heart me-1"></i>
+                                Save to Wishlist
+                              </button>
+                              
+                              <button
+                                className="btn btn-sm btn-outline-secondary"
+                                onClick={() => {
+                                  setMapCenter([place.coordinates.latitude, place.coordinates.longitude]);
+                                  setZoom(15);
+                                }}
+                              >
+                                <i className="fas fa-map-marked-alt me-1"></i>
+                                View on Map
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="no-recommendations">
-              <i className="fas fa-map-marked-alt"></i>
-              <h3>No places found</h3>
-              <p>We couldn't find any recommendations based on your location and preferences.</p>
-              <button className="try-again-btn" onClick={getCurrentLocation}>
-                Update Location
-              </button>
-            </div>
-          )}
+          </div>
         </div>
       </div>
+      
+      {locationModalVisible && <LocationModal />}
     </div>
   );
 };
-
-// Helper function to get icon for a category
-function getCategoryIcon(category) {
-  const categoryIcons = {
-    'restaurant': 'utensils',
-    'cafe': 'coffee',
-    'park': 'tree',
-    'museum': 'landmark',
-    'shopping': 'shopping-bag',
-    'attraction': 'map-marked-alt',
-    'entertainment': 'ticket-alt',
-    'beach': 'umbrella-beach',
-    'mountain': 'mountain',
-    'historical': 'monument',
-  };
-  
-  return categoryIcons[category.toLowerCase()] || 'map-pin';
-}
-
-// Helper function to format distance
-function formatDistance(meters) {
-  if (meters < 1000) {
-    return `${meters.toFixed(0)} meters away`;
-  }
-  const km = meters / 1000;
-  return `${km.toFixed(1)} km away`;
-}
 
 export default Recommendations;

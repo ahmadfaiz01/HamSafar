@@ -137,6 +137,221 @@
   object-fit: cover;
 }
 
+/* Trips Grid Layout */
+.trips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.trip-card {
+  background-color: var(--light-color);
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid var(--border-color);
+}
+
+.trip-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+}
+
+.trip-card-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.trip-card-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.trip-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: var(--gray-color);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  height: 28px;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.delete-btn:hover {
+  color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.trip-details {
+  padding: 1.25rem;
+  flex-grow: 1;
+}
+
+.trip-route {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--gray-color);
+}
+
+.location i {
+  margin-right: 0.5rem;
+  color: var(--primary-color);
+}
+
+.route-arrow {
+  margin: 0 0.75rem;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.trip-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--gray-color);
+}
+
+.meta-item i {
+  margin-right: 0.5rem;
+  color: var(--primary-color);
+}
+
+.view-details-btn {
+  display: block;
+  text-align: center;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  text-decoration: none;
+  padding: 0.75rem;
+  margin-top: auto;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.view-details-btn:hover {
+  background-color: var(--txt-color);
+  color: var(--light-color);
+}
+
+.delete-confirm {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+  text-align: center;
+  z-index: 2;
+}
+
+.delete-confirm p {
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  color: var(--dark-color);
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.confirm-yes {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.confirm-no {
+  background-color: var(--gray-color);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background-color: var(--background-color);
+  border-radius: 12px;
+  margin-top: 1.5rem;
+}
+
+/* Add filter buttons for trip types */
+.trip-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.trip-filter-btn {
+  background-color: var(--background-color);
+  color: var(--primary-color);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.trip-filter-btn.active {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border-color: var(--primary-color);
+}
+
+.trip-filter-btn:hover:not(.active) {
+  background-color: rgba(229, 255, 31, 0.2);
+  border-color: var(--accent-color);
+}
+
+/* Media queries */
 @media (max-width: 768px) {
   .profile-header {
     flex-direction: column;
@@ -154,5 +369,15 @@
   
   .stat:last-child {
     margin-right: 0;
+  }
+
+  .trips-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .trips-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -9,6 +9,8 @@ import tripService from '../../services/tripService';
 import mapService from '../../services/mapService';
 import { toast } from 'react-toastify';
 import './ProfilePage.css';
+import SavedTrips from './SavedTrips';
+import './ProfilePage.css';
 
 const ProfilePage = () => {
   const { currentUser, userProfile, updateProfile } = useAuth();
@@ -417,7 +419,25 @@ const ProfilePage = () => {
           </Tab.Pane>
 
           <Tab.Pane eventKey="trips">
-            <MyTrips />
+            <div className="trips-tab-container">
+              <div className="d-flex justify-content-between align-items-center mb-4">
+                <h3>My Trips</h3>
+                <Button 
+                  variant="primary"
+                  onClick={() => navigate('/itinerary-planner')}
+                >
+                  <i className="fas fa-plus me-2"></i>
+                  Plan New Trip
+                </Button>
+              </div>
+              
+              <MyTrips 
+                isProfileTab={true} 
+                onTripsLoaded={(count) => {
+                  setTripStats(prev => ({...prev, total: count}));
+                }}
+              />
+            </div>
           </Tab.Pane>
 
           <Tab.Pane eventKey="map">

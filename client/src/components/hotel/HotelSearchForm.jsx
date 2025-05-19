@@ -19,9 +19,23 @@ const HotelSearchForm = ({
   loading,
   handleSearch
 }) => {
+  // Handle form submission
+  const onSubmit = (e) => {
+    e.preventDefault();
+    
+    handleSearch({
+      destination,
+      checkIn,
+      checkOut,
+      rooms,
+      adults,
+      children
+    });
+  };
+
   return (
     <div className="hotel-search-form-container">
-      <form className="hotel-search-form" onSubmit={handleSearch}>
+      <form className="hotel-search-form" onSubmit={onSubmit}>
         <div className="search-group destination-group">
           <label htmlFor="destination" style={{ color: 'white'}}>
             <i className="fas fa-map-marker-alt"></i>
@@ -39,7 +53,7 @@ const HotelSearchForm = ({
           />
           <datalist id="destinations">
             {locations.map((city, index) => (
-              <option key={index} value={city} />
+              <option key={index} value={city.name || city} />
             ))}
           </datalist>
         </div>

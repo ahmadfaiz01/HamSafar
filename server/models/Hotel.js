@@ -1,90 +1,94 @@
 const mongoose = require('mongoose');
 
-const HotelSchema = new mongoose.Schema({
+const hotelSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
     trim: true
   },
-  city: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  country: {
-    type: String,
-    required: true,
-    trim: true,
-    default: 'Pakistan' // Default for existing records
-  },
   address: {
     type: String,
     required: true
+  },
+  city: {
+    type: String,
+    required: true,
+    index: true
   },
   description: {
     type: String,
     required: true
   },
-  images: [{
-    type: String,
-    required: true
-  }],
-  mainImage: {
-    type: String,
-    required: true
+  images: {
+    type: [String],
+    default: []
+  },
+  amenities: {
+    type: [String],
+    default: []
   },
   rating: {
     type: Number,
-    required: true,
-    min: 1,
-    max: 5
-  },
-  userRating: {
-    type: Number,
-    default: 0,
     min: 0,
-    max: 10
-  },
-  reviewCount: {
-    type: Number,
+    max: 5,
     default: 0
   },
-  price: {
+  pricePerNight: {
     type: Number,
-    required: true
+    required: true,
+    min: 0
   },
-  amenities: [{
-    type: String
-  }],
-  location: {
-    type: {
-      type: String,
-      enum: ['Point'],
-      default: 'Point'
-    },
-    coordinates: {
-      type: [Number],
-      default: [0, 0]
-    }
+  rooms: {
+    type: [
+      {
+        type: { type: String, required: true },
+        price: { type: Number, required: true },
+        amenities: { type: [String], default: [] }
+      }
+    ],
+    default: []
   },
-  createdAt: {
+  latitude: {
+    type: Number
+  },
+  longitude: {
+    type: Number
+  },
+  contactInfo: {
+    phone: String,
+    email: String,
+    website: String
+  },
+  reviews: {
+    type: [
+      {
+        user: { type: String, required: true },
+        rating: { type: Number, required: true, min: 1, max: 5 },
+        comment: { type: String },
+        date: { type: Date, default: Date.now }
+      }
+    ],
+    default: []
+  },
+  created: {
     type: Date,
     default: Date.now
   },
-  updatedAt: {
+  updated: {
     type: Date,
     default: Date.now
   }
 });
 
-// Create index for geo queries
-HotelSchema.index({ location: '2dsphere' });
+// Add text indexes for searching
+hotelSchema.index({ name: 'text', description: 'text', city: 'text' });
 
-// Create index for search by city and country
-HotelSchema.index({ city: 'text', country: 'text', name: 'text', address: 'text' });
+// Pre-save middleware to update the 'updated' field on document updates
+hotelSchema.pre('save', function(next) {
+  this.updated = new Date();
+  next();
+});
 
-// Create additional index for case-insensitive searches
-HotelSchema.index({ city: 1 });
-HotelSchema.index({ country: 1 });
+const Hotel = mongoose.model('Hotel', hotelSchema);
 
-module.exports = mongoose.model('Hotel', HotelSchema);
+module.exports = Hotel;

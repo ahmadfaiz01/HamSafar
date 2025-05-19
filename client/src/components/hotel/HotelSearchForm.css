@@ -1,0 +1,129 @@
+/* CSS for Hotels Page */
+
+/* General Styles for the Page */
+.hotels-page {
+  min-height: 100vh;
+  padding-bottom: 3rem;
+}
+
+/* Hero Section Styles */
+.hero-section {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1568495248636-6432b97bd949?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+  background-size: cover;
+  background-position: center;
+  height: 40vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  padding: 0 2rem;
+  margin-bottom: 2rem;
+}
+
+.hero-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Hotel Search Form Styles */
+.hotel-search-form {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.hotel-search-form .form-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.hotel-search-form .form-control,
+.hotel-search-form .form-select,
+.hotel-search-form .react-datepicker-wrapper {
+  width: 100%;
+}
+
+.hotel-search-form .react-datepicker-wrapper .react-datepicker__input-container input {
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+
+.hotel-search-form .btn-primary {
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+}
+
+/* Search Results Styles */
+.search-results {
+  padding-top: 1rem;
+}
+
+.search-results h2 {
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  color: #343a40;
+}
+
+.hotels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* No Results Found Styles */
+.no-results {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.no-results i {
+  font-size: 3rem;
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.no-results h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #343a40;
+}
+
+.no-results p {
+  font-size: 1.1rem;
+  color: #6c757d;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}
+
+/* Responsive Styles */
+@media (max-width: 767.98px) {
+  .hotel-search-form-container {
+    margin-top: 1rem;
+  }
+  
+  .hero-section {
+    height: 30vh;
+  }
+  
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+}

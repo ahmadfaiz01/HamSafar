@@ -1,0 +1,303 @@
+:root {
+  --accent-color: #E5FF1F;      /* Primary blue */
+  --accent-light: #dbeafe;      /* Light blue for backgrounds */
+  --accent-dark: #051937;       /* Darker blue for hover states */
+  --rating-color: #10b981;      /* Green for ratings */
+  --text-dark: #051937;         /* Dark text */
+  --text-medium: #0e6ff3;       /* Medium gray text */
+  --text-light: #0e6ff3;        /* Light gray text */
+  --border-color: #051937;      /* Light gray for borders */
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --card-hover-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.hotel-card {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.hotel-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--card-hover-shadow);
+}
+
+.hotel-image {
+  flex: 0 0 30%;
+  max-width: 350px;
+  position: relative;
+  overflow: hidden;
+  height: 250px;
+}
+
+.hotel-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+
+
+/* Image indicator dots */
+.image-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  z-index: 2;
+}
+
+.image-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.image-dot.active {
+  background-color: var(--accent-color);
+}
+
+.hotel-details {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.hotel-name {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.hotel-location {
+  color: var(--text-medium);
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+}
+
+.hotel-location i {
+  color: var(--accent-color);
+  margin-right: 0.5rem;
+}
+
+.hotel-amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.amenity-tag {
+  background-color: var(--accent-color);
+  color: var(--text-dark);
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.amenity-tag.more {
+  background-color: var(--accent-dark);
+  color: var(--accent-color);
+}
+
+.hotel-rating {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rating-score {
+  background-color: var(--accent-dark);
+  color: var(--accent-color);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.rating-text {
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.hotel-price {
+  flex: 0 0 25%;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  text-align: right;
+  border-left: 1px solid var(--border-color);
+}
+
+.price {
+  display: block;
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: var(--accent-color);
+  margin-bottom: 0.25rem;
+}
+
+.per-night {
+  color: var(--text-medium);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Contact section */
+.hotel-card-actions {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.btn-contact-hotel {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background-color: var(--accent-color);
+  color: var(--accent-dark);
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-contact-hotel:hover {
+  background-color: var(--accent-color);
+}
+
+/* Contact Info Section */
+.hotel-contact-info {
+  flex: 0 0 100%;
+  background-color: var(--accent-dark);
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.contact-info-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contact-info-container h4 {
+  color: var(--accent-light);
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.contact-item i {
+  color: var(--text-light);
+  width: 20px;
+  text-align: center;
+}
+.contactdetail {
+  color: var(--accent-color);
+}
+
+.contact-item a {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.contact-item a:hover {
+  text-decoration: underline;
+}
+
+.about-container {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.about-container h5 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: var(--accent-light);
+}
+
+.hotel-description {
+  color: var(--accent-color);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Responsive styles */
+@media (max-width: 991.98px) {
+  .hotel-card {
+    flex-direction: column;
+  }
+  
+  .hotel-image {
+    max-width: none;
+    height: 220px;
+  }
+  
+  .hotel-price {
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+    align-items: center;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .hotel-name {
+    font-size: 1.25rem;
+  }
+  
+  .hotel-amenities {
+    margin-bottom: 0.5rem;
+  }
+  
+  .hotel-details,
+  .hotel-price {
+    padding: 1rem;
+  }
+  
+  .hotel-contact-info {
+    padding: 1rem;
+  }
+}

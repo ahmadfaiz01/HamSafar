@@ -8,7 +8,8 @@ import {
   getUserPreferences,
   updateUserPreferences,
   getUserWishlist,
-  getUserTrips
+  getUserTrips,
+  removeFromWishlist // Import the removeFromWishlist function
 } from '../services/userService';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import SavedTrips from '../components/profile/SavedTrips';
@@ -156,21 +157,30 @@ function Profile() {
   const handleSaveProfile = async () => {
     setLoading(true);
     try {
+      console.log('Saving profile...');
+      
       // Upload image if selected
       let photoURL = profile?.photoURL; // Keep existing URL by default
       
       if (imageFile) {
+        console.log('Uploading new profile photo...');
+        
+        // This will both upload the image to Storage and update the photoURL in Firestore
         photoURL = await uploadProfilePhoto(currentUser.uid, imageFile);
+        
+        console.log('Uploaded photo URL:', photoURL);
         setImageFile(null);
       }
       
       // Combine everything into one profile update
       const updatedProfileData = {
         ...editedProfile,
-        photoURL
+        photoURL  // This is either the existing URL or the new one from uploadProfilePhoto
       };
       
-      // Update profile information
+      console.log('Updating profile with data:', updatedProfileData);
+      
+      // Update profile information (no need to include photoURL again as it's already updated)
       await updateUserProfile(currentUser.uid, updatedProfileData);
       
       // Update preferences separately
@@ -186,7 +196,8 @@ function Profile() {
         ...updatedProfileData
       }));
       
-      // No need to call fetchUserData() as we've already updated local state
+      // Refresh the user data to ensure everything is up to date
+      fetchUserData();
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Could not update your profile');
@@ -212,6 +223,22 @@ function Profile() {
     }
   };
 
+  // New function to handle removing wishlist items
+  const handleRemoveFromWishlist = async (itemId) => {
+    try {
+      // Call your API service to remove the item
+      await removeFromWishlist(currentUser.uid, itemId);
+      
+      // Update the local state by filtering out the removed item
+      setWishlist(prev => prev.filter(item => item.id !== itemId));
+      
+      // Show success message
+      toast.success('Item removed from wishlist');
+    } catch (error) {
+      console.error('Error removing item from wishlist:', error);
+      toast.error('Could not remove item from wishlist');
+    }
+  };
 
   if (loading && !profile) {
     return <LoadingSpinner />;
@@ -611,14 +638,18 @@ function Profile() {
                             <p className="small text-muted mb-2">
                               {item.description && item.description.length > 100
                                 ? `${item.description.substring(0, 100)}...`
-                                : item.description || 'No description available'}
-                            </p>
+                                : "Saved at:"}
+                            </p><p>{item.addedAt ? new Date(item.addedAt).toLocaleDateString() : 'Not set'}</p>
                             <div className="d-flex justify-content-between align-items-center mt-3">
                               <small className="text-muted">
-                                {item.addedAt ? new Date(item.addedAt.seconds * 1000).toLocaleDateString() : 'Recently added'}
+                                {item.rating ? `Rating: ${item.rating}` : 'No rating'}
                               </small>
-                              <button className="btn btn-sm btn-outline-primary">
-                                View Details
+                              <button 
+                                className="btn btn-sm btn-outline-danger"
+                                onClick={() => handleRemoveFromWishlist(item.id)}
+                              >
+                                <i className="fas fa-trash me-1"></i>
+                                Remove
                               </button>
                             </div>
                           </div>

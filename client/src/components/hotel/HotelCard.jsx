@@ -1,107 +1,146 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import './HotelCard.css';
 
 const HotelCard = ({ hotel, checkIn, checkOut, nights, formatDate }) => {
-  // Get rating label
-  const getRatingLabel = (rating) => {
-    if (rating >= 9) return "Exceptional";
-    if (rating >= 8) return "Excellent";
-    if (rating >= 7) return "Very Good";
-    if (rating >= 6) return "Good";
-    return "Fair";
+  const [showContact, setShowContact] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Get images for the card
+  const hotelImages = hotel.images && hotel.images.length > 0 
+    ? hotel.images 
+    : ['https://via.placeholder.com/500x300?text=No+Image+Available'];
+  
+  // Display only first 4 amenities
+  const displayAmenities = hotel.amenities && hotel.amenities.length > 0 
+    ? hotel.amenities.slice(0, 4) 
+    : ['No amenities listed'];
+  
+  // Toggle contact info display
+  const toggleContactInfo = () => {
+    setShowContact(!showContact);
   };
-
-  // Map amenities to icons
-  const amenityIcons = {
-    "Free Wi-Fi": "fas fa-wifi",
-    "Parking": "fas fa-parking",
-    "Pool": "fas fa-swimming-pool",
-    "Fitness Center": "fas fa-dumbbell",
-    "Restaurant": "fas fa-utensils",
-    "Spa": "fas fa-spa",
-    "Pet Friendly": "fas fa-paw",
-    "Airport Shuttle": "fas fa-shuttle-van",
-    "Room Service": "fas fa-concierge-bell",
-    "Bar": "fas fa-glass-martini-alt",
-    "Air Conditioning": "fas fa-snowflake",
-    "Breakfast": "fas fa-coffee"
+  
+  // Handle image navigation
+  const nextImage = (e) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === hotelImages.length - 1 ? 0 : prevIndex + 1
+    );
   };
-
+  
+  const prevImage = (e) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? hotelImages.length - 1 : prevIndex - 1
+    );
+  };
+  
   return (
     <div className="hotel-card">
-      <div className="row g-0">
-        <div className="col-md-4">
-          <img
-            src={hotel.mainImage}
-            alt={hotel.name}
-            className="hotel-card-img"
-          />
-        </div>
-        <div className="col-md-5">
-          <div className="hotel-card-body">
-            <div className="hotel-name-rating">
-              <h3 className="hotel-name">{hotel.name}</h3>
-              <div className="hotel-stars">
-                {Array(Math.floor(hotel.rating)).fill(0).map((_, i) => (
-                  <i key={i} className="fas fa-star"></i>
-                ))}
-                {hotel.rating % 1 !== 0 && (
-                  <i className="fas fa-star-half-alt"></i>
-                )}
-              </div>
-            </div>
-            <p className="hotel-location">
-              <i className="fas fa-map-marker-alt"></i> {hotel.city}, {hotel.address}
-            </p>
-            <div className="hotel-features">
-              {hotel.amenities.slice(0, 4).map((amenity, index) => (
-                <span key={index} className="hotel-feature">
-                  <i className={amenityIcons[amenity] || "fas fa-check"}></i> {amenity}
-                </span>
+      <div className="hotel-image">
+        <img src={hotelImages[currentImageIndex]} alt={hotel.name} />
+        
+        {/* Add image navigation if there are multiple images */}
+        {hotelImages.length > 1 && (
+          <>
+            <div className="image-dots">
+              {hotelImages.map((_, index) => (
+                <span 
+                  key={index} 
+                  className={`image-dot ${index === currentImageIndex ? 'active' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentImageIndex(index);
+                  }}
+                ></span>
               ))}
-              {hotel.amenities.length > 4 && (
-                <span className="hotel-feature more-amenities">
-                  +{hotel.amenities.length - 4} more
-                </span>
-              )}
             </div>
-            <div className="hotel-description">
-              {hotel.description}
-            </div>
-          </div>
+          </>
+        )}
+      </div>
+      
+      <div className="hotel-details">
+        <h3 className="hotel-name">{hotel.name}</h3>
+        <p className="hotel-location">
+          <i className="fas fa-map-marker-alt"></i> {hotel.address}, {hotel.city}
+        </p>
+        
+        <div className="hotel-amenities">
+          {displayAmenities.map((amenity, index) => (
+            <span key={index} className="amenity-tag">
+              {amenity}
+            </span>
+          ))}
+          {hotel.amenities && hotel.amenities.length > 4 && (
+            <span className="amenity-tag more">
+              +{hotel.amenities.length - 4} more
+            </span>
+          )}
         </div>
-        <div className="col-md-3">
-          <div className="hotel-card-price">
-            <div className="hotel-rating-score">
-              <span className="score">{hotel.userRating.toFixed(1)}</span>
-              <span className="score-label">
-                {getRatingLabel(hotel.userRating)}
-              </span>
-              <span className="reviews">
-                {hotel.reviewCount} reviews
-              </span>
-            </div>
-            
-            <div className="hotel-price">
-              <div className="price-info">
-                <span className="price">Rs. {hotel.price.toLocaleString()}</span>
-                <span className="per-night">per night</span>
-              </div>
-              <div className="total-price">
-                Rs. {(hotel.price * nights).toLocaleString()} total
-                <span className="nights-count">
-                  for {nights} night{nights !== 1 ? 's' : ''} 
-                  ({formatDate(checkIn)} to {formatDate(checkOut)})
-                </span>
-              </div>
-            </div>
-            
-            <Link to={`/hotels/${hotel._id}`} className="btn btn-primary view-deal-btn">
-              View Deal
-            </Link>
-          </div>
+        
+        <div className="hotel-rating">
+          <span className="rating-score">{hotel.rating?.toFixed(1) || '?'}</span>
+          <span className="rating-text">
+            {hotel.rating >= 4.5 ? 'Excellent' : 
+             hotel.rating >= 4.0 ? 'Very Good' : 
+             hotel.rating >= 3.5 ? 'Good' : 
+             hotel.rating >= 3.0 ? 'Average' : 'Fair'}
+          </span>
         </div>
       </div>
+      
+      <div className="hotel-price">
+        <span className="price">Rs. {hotel.pricePerNight || hotel.price}</span>
+        <span className="per-night">per night</span>
+        
+        {/* Contact info button */}
+        <div className="hotel-card-actions">
+          <button 
+            className="btn-contact-hotel"
+            onClick={toggleContactInfo}
+          >
+            <i className={`fas ${showContact ? 'fa-chevron-up' : 'fa-info-circle'} me-2`}></i>
+            {showContact ? 'Hide Contact' : 'Show Contact Info'}
+          </button>
+        </div>
+      </div>
+      
+      {/* Contact Information Section */}
+      {showContact && hotel.contactInfo && (
+        <div className="hotel-contact-info">
+          <div className="contact-info-container">
+            <h4>Contact Information</h4>
+            <div className="contact-item">
+              <i className="fas fa-phone"></i>
+              <span className='contactdetail'>{hotel.contactInfo.phone || 'Phone number not available'}</span>
+            </div>
+            
+            <div className="contact-item">
+              <i className="fas fa-envelope"></i>
+              <span className='contactdetail'>{hotel.contactInfo.email || 'Email not available'}</span>
+            </div>
+            
+            {hotel.contactInfo.website && (
+              <div className="contact-item">
+                <i className="fas fa-globe"></i>
+                <a 
+                  href={hotel.contactInfo.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  Visit Website
+                </a>
+              </div>
+            )}
+            
+            <div className="about-container">
+              <h5>About</h5>
+              <p className="hotel-description">{hotel.description}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
