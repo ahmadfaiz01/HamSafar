@@ -1,22 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const recommendationController = require('../controllers/recommendationController');
-const auth = require('../middleware/auth');
-const optionalAuth = require('../middleware/optionalAuth');
 
-// Get personalized recommendations (requires auth)
-router.get('/', optionalAuth, recommendationController.getPersonalizedRecommendations);
+// Check if controller functions exist
+if (!recommendationController.getNearbyAttractions) {
+  console.error('Warning: getNearbyAttractions function is not defined in the controller');
+}
 
-// Get recommendations by category
+// Get various types of recommendations
+router.get('/personalized', recommendationController.getPersonalizedRecommendations);
 router.get('/category/:category', recommendationController.getCategoryRecommendations);
-
-// Get all destinations
 router.get('/destinations', recommendationController.getAllDestinations);
-
-// Get destination by ID
 router.get('/destinations/:id', recommendationController.getDestinationById);
 
-// Add destination to wishlist (requires auth)
-router.post('/wishlist', auth, recommendationController.addToWishlist);
+// Get nearby attractions
+router.get('/nearby', recommendationController.getNearbyAttractions);
+
+// Add to wishlist endpoint
+router.post('/wishlist', recommendationController.addToWishlist);
+
+// Store user location
+router.post('/user-location', recommendationController.storeUserLocation);
 
 module.exports = router;

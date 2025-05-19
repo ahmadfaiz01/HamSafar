@@ -2,19 +2,18 @@ const express = require('express');
 const router = express.Router();
 const hotelController = require('../controllers/hotelController');
 
-// Get available cities
+// Public routes
 router.get('/cities', hotelController.getCities);
-
-// Get popular destinations
 router.get('/popular-destinations', hotelController.getPopularDestinations);
-
-// Search hotels
 router.get('/search', hotelController.searchHotels);
 
-// Get hotel by ID
+// Generic routes for single items come after specific routes
 router.get('/:id', hotelController.getHotelById);
+router.get('/', hotelController.getAllHotels);
 
-// Get hotels by city
-router.get('/city/:city', hotelController.getHotelsByCity);
+// Admin routes - should have authentication middleware in production
+router.post('/', hotelController.createHotel);
+router.put('/:id', hotelController.updateHotel);
+router.delete('/:id', hotelController.deleteHotel);
 
 module.exports = router;
