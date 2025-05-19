@@ -1,8 +1,20 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import '../styles/chatfab.css';
 
 const ChatFAB = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+
+  const handleChatClick = (e) => {
+    e.preventDefault();
+    
+    // Set flag to indicate we're changing routes manually
+    sessionStorage.setItem('fromOtherPage', 'true');
+    
+    // Use navigate instead of Link component for more control
+    navigate('/chatbot');
+  };
 
   return (
     <div className="chat-fab-container">
@@ -11,14 +23,15 @@ const ChatFAB = () => {
           Chat with HamSafar Assistant
         </div>
       )}
-      <Link 
-        to="/chatbot" 
+      <a 
+        href="/chatbot"
         className="chat-fab"
+        onClick={handleChatClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <i className="fas fa-comment-dots"></i>
-      </Link>
+      </a>
     </div>
   );
 };

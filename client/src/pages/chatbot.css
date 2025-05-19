@@ -1,3 +1,20 @@
+/* Nuclear option to disable all auto-scrolling */
+* {
+  scroll-behavior: auto !important;
+}
+
+html, body, div, main, section, article {
+  overflow-anchor: none !important;
+  scroll-behavior: auto !important;
+}
+
+.no-auto-scroll {
+  overflow-anchor: none !important;
+  scroll-behavior: auto !important;
+  scroll-snap-type: none !important;
+  overscroll-behavior: none !important;
+}
+
 .chatbot-container {
   position: relative; /* Change from fixed to relative */
   bottom: auto; /* Remove bottom positioning */
@@ -300,9 +317,16 @@
     linear-gradient(rgba(0, 60, 255, 0.233) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 60, 255, 0.082) 1px, transparent 1px);
   background-size: 20px 20px;
-  /* Add this to control scroll behavior */
-  scroll-behavior: auto;
-  overscroll-behavior: contain;
+  /* Completely disable smooth scrolling and auto-scrolling */
+  scroll-behavior: auto !important; 
+  overflow-anchor: none !important;
+  overscroll-behavior: none !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Also add this rule to stop any automatic scrolling animations */
+html {
+  scroll-behavior: auto !important;
 }
 
 .chat-messages-container {

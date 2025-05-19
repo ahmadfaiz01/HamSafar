@@ -34,6 +34,7 @@ import SavedTrips from './components/profile/SavedTrips';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import logo from './assets/logo.png'; // Import the logo image
+import ScrollBlocker from './components/ScrollBlocker';
 
 // Protected route wrapper function
 function PrivateRoute({ children }) {
@@ -60,6 +61,7 @@ function App() {
       <AuthProvider>
         <ThemeProvider theme={theme}>
           <CssBaseline />
+          <ScrollBlocker />
           <div className="app-container d-flex flex-column min-vh-100">
             <Navbar />
             <main className="flex-grow-1">
