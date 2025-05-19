@@ -1,109 +1,196 @@
 const Hotel = require('../models/Hotel');
 
-// Get all available cities
-exports.getCities = async (req, res) => {
-  try {
-    const cities = await Hotel.distinct('city');
-    res.status(200).json({ success: true, data: cities });
-  } catch (error) {
-    console.error('Error fetching cities:', error);
-    res.status(500).json({ success: false, error: 'Server error' });
-  }
-};
-
-// Get popular destinations with counts
+// Get popular destinations
 exports.getPopularDestinations = async (req, res) => {
   try {
+    console.log('Getting popular destinations');
+    
+    // Aggregate hotels by city and count them
     const destinations = await Hotel.aggregate([
-      { $group: { _id: '$city', count: { $sum: 1 }, image: { $first: '$mainImage' } } },
+      { $group: { _id: '$city', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
-      // Remove the $limit: 8 line or increase it to show more cities
-      { $project: { _id: 0, name: '$_id', properties: '$count', imageUrl: '$image' } }
+      { $limit: 6 },
+      { $project: { _id: 0, name: '$_id', properties: '$count' } }
     ]);
     
-    res.status(200).json({ success: true, data: destinations });
+    console.log(`Found ${destinations.length} popular destinations`);
+    res.json(destinations);
   } catch (error) {
-    console.error('Error fetching popular destinations:', error);
-    res.status(500).json({ success: false, error: 'Server error' });
+    console.error('Error getting popular destinations:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Search hotels
+// Get all cities
+exports.getCities = async (req, res) => {
+  try {
+    console.log('Getting all cities with hotels');
+    
+    // Group by city and count properties in each city
+    const cities = await Hotel.aggregate([
+      { $group: { _id: '$city', properties: { $sum: 1 } } },
+      { $project: { _id: 0, name: '$_id', properties: 1 } },
+      { $sort: { properties: -1 } }
+    ]);
+    
+    console.log(`Found ${cities.length} cities with hotels`);
+    res.json(cities);
+  } catch (error) {
+    console.error('Error getting cities:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+/**
+ * Search hotels based on various criteria
+ */
 exports.searchHotels = async (req, res) => {
   try {
-    const { destination, checkIn, checkOut, rooms, adults, children, 
-           minPrice, maxPrice, rating, amenities } = req.query;
+    console.log('Searching hotels with query:', req.query);
+    const {
+      destination,
+      checkIn,
+      checkOut,
+      guests = 2,
+      rooms = 1,
+      minPrice,
+      maxPrice,
+      amenities,
+      rating
+    } = req.query;
     
-    // Basic query object
+    // Build search query
     const query = {};
     
-    // Apply destination filter
+    // Location search
     if (destination) {
-      query.city = { $regex: new RegExp(destination, 'i') };
+      // Try to match city name directly first
+      const cityRegex = new RegExp(destination, 'i');
+      query.$or = [
+        { city: cityRegex },
+        { $text: { $search: destination } } // Fall back to text search if needed
+      ];
     }
     
-    // Apply price filter if provided
+    // Price range
     if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
+      query.pricePerNight = {};
+      if (minPrice) query.pricePerNight.$gte = Number(minPrice);
+      if (maxPrice) query.pricePerNight.$lte = Number(maxPrice);
     }
     
-    // Apply star rating filter
+    // Rating
     if (rating) {
       query.rating = { $gte: Number(rating) };
     }
     
-    // Apply amenities filter
+    // Amenities
     if (amenities) {
-      const amenitiesList = amenities.split(',');
-      query.amenities = { $all: amenitiesList };
+      const amenitiesList = amenities.split(',').map(a => a.trim());
+      if (amenitiesList.length > 0) {
+        query.amenities = { $all: amenitiesList };
+      }
     }
     
-    // Execute search
-    const hotels = await Hotel.find(query).sort({ userRating: -1 });
+    console.log('Final MongoDB query:', JSON.stringify(query));
     
-    res.status(200).json({ 
-      success: true, 
-      count: hotels.length,
-      data: hotels 
-    });
+    // Execute the query
+    const hotels = await Hotel.find(query).limit(20);
+    
+    console.log(`Found ${hotels.length} hotels matching the criteria`);
+    res.json(hotels);
   } catch (error) {
     console.error('Error searching hotels:', error);
-    res.status(500).json({ success: false, error: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Get hotel by ID
+/**
+ * Get hotel by ID
+ */
 exports.getHotelById = async (req, res) => {
   try {
+    console.log(`Getting hotel with ID: ${req.params.id}`);
     const hotel = await Hotel.findById(req.params.id);
     
     if (!hotel) {
-      return res.status(404).json({ success: false, error: 'Hotel not found' });
+      console.log(`Hotel with ID ${req.params.id} not found`);
+      return res.status(404).json({ message: 'Hotel not found' });
     }
     
-    res.status(200).json({ success: true, data: hotel });
+    console.log(`Found hotel: ${hotel.name}`);
+    res.json(hotel);
   } catch (error) {
-    console.error('Error fetching hotel:', error);
-    res.status(500).json({ success: false, error: 'Server error' });
+    console.error('Error getting hotel by ID:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Get hotels by city
-exports.getHotelsByCity = async (req, res) => {
+/**
+ * Get all hotels
+ */
+exports.getAllHotels = async (req, res) => {
   try {
-    const { city } = req.params;
-    
-    const hotels = await Hotel.find({ city: { $regex: new RegExp(city, 'i') } });
-    
-    res.status(200).json({ 
-      success: true, 
-      count: hotels.length,
-      data: hotels 
-    });
+    console.log('Getting all hotels');
+    const hotels = await Hotel.find().limit(20);
+    console.log(`Found ${hotels.length} hotels`);
+    res.json(hotels);
   } catch (error) {
-    console.error('Error fetching hotels by city:', error);
-    res.status(500).json({ success: false, error: 'Server error' });
+    console.error('Error getting all hotels:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+/**
+ * Create a new hotel (admin function)
+ */
+exports.createHotel = async (req, res) => {
+  try {
+    const hotel = new Hotel(req.body);
+    await hotel.save();
+    res.status(201).json(hotel);
+  } catch (error) {
+    console.error('Error creating hotel:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+/**
+ * Update an existing hotel (admin function)
+ */
+exports.updateHotel = async (req, res) => {
+  try {
+    const hotel = await Hotel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    
+    if (!hotel) {
+      return res.status(404).json({ message: 'Hotel not found' });
+    }
+    
+    res.json(hotel);
+  } catch (error) {
+    console.error('Error updating hotel:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+/**
+ * Delete a hotel (admin function)
+ */
+exports.deleteHotel = async (req, res) => {
+  try {
+    const hotel = await Hotel.findByIdAndDelete(req.params.id);
+    
+    if (!hotel) {
+      return res.status(404).json({ message: 'Hotel not found' });
+    }
+    
+    res.json({ message: 'Hotel deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting hotel:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
