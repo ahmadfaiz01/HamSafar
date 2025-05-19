@@ -300,6 +300,9 @@
     linear-gradient(rgba(0, 60, 255, 0.233) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 60, 255, 0.082) 1px, transparent 1px);
   background-size: 20px 20px;
+  /* Add this to control scroll behavior */
+  scroll-behavior: auto;
+  overscroll-behavior: contain;
 }
 
 .chat-messages-container {
