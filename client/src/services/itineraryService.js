@@ -183,17 +183,63 @@ export const getUserItineraries = async (userId) => {
  */
 export const getItineraryById = async (userId, itineraryId) => {
   try {
+    console.log(`Fetching itinerary ${itineraryId} for user ${userId}`);
+    
+    // Try the /users/{userId}/trips/{itineraryId} path first (correct path based on saveItinerary)
+    const tripRef = doc(db, 'users', userId, 'trips', itineraryId);
+    const tripSnap = await getDoc(tripRef);
+    
+    if (tripSnap.exists()) {
+      console.log('Found itinerary in trips collection');
+      const data = tripSnap.data();
+      
+      // Convert the stored JSON strings back to objects
+      let dayPlans = [];
+      let recommendations = { dining: [], attractions: [], shopping: [], transportation: [] };
+      
+      // Safely parse the JSON strings
+      try {
+        if (data.dayPlansJson) {
+          dayPlans = JSON.parse(data.dayPlansJson);
+        }
+        
+        if (data.recommendationsJson) {
+          recommendations = JSON.parse(data.recommendationsJson);
+        }
+      } catch (e) {
+        console.error("Error parsing JSON data:", e);
+      }
+      
+      // Return the parsed data
+      return {
+        id: tripSnap.id,
+        tripName: data.tripName,
+        source: data.source,
+        destination: data.destination,
+        numberOfDays: data.numberOfDays,
+        createdAt: data.createdAt,
+        dayPlans: dayPlans,
+        recommendations: recommendations,
+        estimatedBudget: data.budget
+      };
+    }
+    
+    // Fall back to the /users/{userId}/itineraries/{itineraryId} path
+    console.log('Trying alternate path in itineraries collection');
     const itineraryRef = doc(db, 'users', userId, 'itineraries', itineraryId);
     const itinerarySnap = await getDoc(itineraryRef);
     
-    if (!itinerarySnap.exists()) {
-      throw new Error('Itinerary not found');
+    if (itinerarySnap.exists()) {
+      console.log('Found itinerary in itineraries collection');
+      return {
+        id: itinerarySnap.id,
+        ...itinerarySnap.data()
+      };
     }
     
-    return {
-      id: itinerarySnap.id,
-      ...itinerarySnap.data()
-    };
+    // If not found in either location, throw an error
+    console.log('Itinerary not found in any collection');
+    throw new Error('Itinerary not found');
   } catch (error) {
     console.error("Error fetching itinerary:", error);
     throw error;

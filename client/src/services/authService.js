@@ -34,6 +34,28 @@ const authService = {
       console.error('Error updating profile:', error);
       throw error;
     }
+  },
+  
+  // New method specifically for updating profile photo
+  updateProfilePhoto: async (userId, photoURL) => {
+    try {
+      const response = await api.patch(`/users/${userId}/photo`, { photoURL });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating profile photo:', error);
+      throw error;
+    }
+  },
+  
+  // Get user profile including photo
+  getUserProfile: async (userId) => {
+    try {
+      const response = await api.get(`/users/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      throw error;
+    }
   }
 };
 
