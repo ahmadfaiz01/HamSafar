@@ -10,15 +10,34 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  // Effect to handle auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user);
+      setLoading(false);
+      
+      // If this is a new login (not just a page refresh), 
+      // you could store a flag in sessionStorage
+      if (user && sessionStorage.getItem('isLoggingIn') === 'true') {
+        sessionStorage.removeItem('isLoggingIn');
+        // navigate('/profile'); // We'll handle navigation in the login component instead
+      }
+    });
+
+    return unsubscribe;
+  }, []);
 
   const signup = async (name, email, password) => {
     try {
@@ -49,6 +68,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setError('');
+      sessionStorage.setItem('isLoggingIn', 'true');
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
       // Update user's last login time
@@ -68,6 +88,7 @@ export const AuthProvider = ({ children }) => {
   const googleSignIn = async () => {
     try {
       setError('');
+      sessionStorage.setItem('isLoggingIn', 'true');
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       
@@ -109,15 +130,6 @@ export const AuthProvider = ({ children }) => {
       throw err;
     }
   };
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
-    });
-
-    return unsubscribe;
-  }, []);
 
   const value = {
     currentUser,

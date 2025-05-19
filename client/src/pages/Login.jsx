@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import './Auth.css';
@@ -7,80 +7,26 @@ import './Auth.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
-  
-  const { signup, login, googleSignIn, error, setError } = useAuth();
+  const { login, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
-
-  // Form validation
-  const validateForm = () => {
-    if (isRegister) {
-      // Registration validations
-      if (!name || name.trim().length < 2) {
-        toast.error('Please enter a valid name');
-        return false;
-      }
-      
-      if (password !== confirmPassword) {
-        toast.error('Passwords do not match');
-        return false;
-      }
-      
-      if (password.length < 6) {
-        toast.error('Password must be at least 6 characters');
-        return false;
-      }
-    }
-    
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      toast.error('Please enter a valid email address');
-      return false;
-    }
-    
-    return true;
-  };
+  const location = useLocation();
+  
+  // Get the intended destination or default to profile
+  const from = location.state?.from || '/profile';
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Clear any previous errors
-    if (setError) {
-      setError('');
-    }
-    
-    // Validate form
-    if (!validateForm()) return;
+    setLoading(true);
     
     try {
-      setLoading(true);
-      
-      if (isRegister) {
-        // Registration logic
-        await signup(name, email, password);
-        toast.success('Account created successfully!');
-        navigate('/onboarding');
-      } else {
-        // Login logic
-        await login(email, password);
-        toast.success('Logged in successfully!');
-        navigate('/dashboard');
-      }
-    } catch (err) {
-      console.error(isRegister ? 'Registration error' : 'Login error', err);
-      
-      // Only show toast if no specific error from AuthContext
-      if (!error) {
-        toast.error(isRegister 
-          ? 'Failed to create account' 
-          : 'Login failed. Please check your credentials'
-        );
-      }
+      await login(email, password);
+      // Redirect to profile page after successful login
+      navigate(from);
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error(error.message || 'Failed to login. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -88,38 +34,18 @@ const Login = () => {
 
   // Handle Google Sign In
   const handleGoogleSignIn = async () => {
+    setLoading(true);
+    
     try {
-      setLoading(true);
-      // Clear any previous errors
-      if (setError) {
-        setError('');
-      }
-      
-      await googleSignIn();
-      toast.success('Signed in successfully!');
-      navigate('/dashboard');
-    } catch (err) {
-      console.error('Google Sign In error', err);
-      
-      // Only show toast if no specific error from AuthContext
-      if (!error) {
-        toast.error('Google sign-in failed. Please try again.');
-      }
+      await signInWithGoogle();
+      // Redirect to profile page after successful Google sign-in
+      navigate(from);
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      toast.error(error.message || 'Failed to sign in with Google. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
-
-  // Toggle between login and register
-  const toggleAuthMode = () => {
-    setIsRegister(!isRegister);
-    setError(''); // Clear any previous errors
-    
-    // Reset form fields
-    setName('');
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
   };
 
   return (
@@ -129,38 +55,15 @@ const Login = () => {
           <div className="card auth-card shadow-sm">
             <div className="card-body p-4">
               <h2 className="text-center mb-4">
-                {isRegister ? 'Create Account' : 'Welcome Back'}
+                {' '}
+                Welcome Back
               </h2>
               
               {/* Error Alert */}
-              {error && (
-                <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                  {error}
-                  <button 
-                    type="button" 
-                    className="btn-close" 
-                    onClick={() => setError('')}
-                  ></button>
-                </div>
-              )}
+              
               
               {/* Authentication Form */}
               <form onSubmit={handleSubmit}>
-                {/* Name Field (only for registration) */}
-                {isRegister && (
-                  <div className="mb-3">
-                    <label htmlFor="name" className="form-label">Full Name</label>
-                    <input
-                      id="name"
-                      type="text"
-                      className="form-control"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Enter your full name"
-                      required
-                    />
-                  </div>
-                )}
                 
                 {/* Email Field */}
                 <div className="mb-3">
@@ -180,7 +83,7 @@ const Login = () => {
                 {/* Password Field */}
                 <div className="mb-3">
                   <label htmlFor="password" className="form-label">
-                    {isRegister ? 'Create Password' : 'Password'}
+                    Password
                   </label>
                   <input
                     id="password"
@@ -188,17 +91,10 @@ const Login = () => {
                     className="form-control"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder={isRegister ? 'Minimum 6 characters' : 'Enter your password'}
+                    placeholder="Enter your password"
                     required
-                    minLength={isRegister ? 6 : undefined}
                   />
-                  {isRegister && (
-                    <small className="form-text text-muted">
-                      Password must be at least 6 characters
-                    </small>
-                  )}
-                  {!isRegister && (
-                    <div className="d-flex justify-content-end mt-1">
+                  <div className="d-flex justify-content-end mt-1">
                       <Link 
                         to="/forgot-password" 
                         className="text-primary text-decoration-none small"
@@ -206,27 +102,7 @@ const Login = () => {
                         Forgot Password?
                       </Link>
                     </div>
-                  )}
                 </div>
-                
-                {/* Confirm Password Field (only for registration) */}
-                {isRegister && (
-                  <div className="mb-3">
-                    <label htmlFor="confirmPassword" className="form-label">
-                      Confirm Password
-                    </label>
-                    <input
-                      id="confirmPassword"
-                      type="password"
-                      className="form-control"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Repeat your password"
-                      required
-                      minLength={6}
-                    />
-                  </div>
-                )}
                 
                 {/* Submit Button */}
                 <button 
@@ -235,8 +111,8 @@ const Login = () => {
                   disabled={loading}
                 >
                   {loading 
-                    ? (isRegister ? 'Creating Account...' : 'Signing In...') 
-                    : (isRegister ? 'Sign Up' : 'Log In')
+                    ? 'Signing In...' 
+                    : 'Log In'
                   }
                 </button>
               </form>
@@ -260,29 +136,7 @@ const Login = () => {
               
               {/* Toggle between Login and Register */}
               <div className="text-center mt-3">
-                {isRegister ? (
-                  <p className="small">
-                    Already have an account?{' '}
-                    <button 
-                      type="button"
-                      className="btn btn-link p-0 align-baseline"
-                      onClick={toggleAuthMode}
-                    >
-                      Log In
-                    </button>
-                  </p>
-                ) : (
-                  <p className="small">
-                    Don't have an account?{' '}
-                    <button 
-                      type="button"
-                      className="btn btn-link p-0 align-baseline"
-                      onClick={toggleAuthMode}
-                    >
-                      Sign Up
-                    </button>
-                  </p>
-                )}
+                
               </div>
             </div>
           </div>
